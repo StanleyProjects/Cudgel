@@ -8,6 +8,8 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import stan.cudgel.modules.main.MainScene;
+
 public class App
     extends Application
 {
@@ -22,7 +24,7 @@ public class App
         primaryStage.initStyle(StageStyle.TRANSPARENT);
         primaryStage.setAlwaysOnTop(true);
         Rectangle2D screen = Screen.getPrimary().getVisualBounds();
-        //primaryStage.setScene(new MainScene(screen.getWidth(), screen.getHeight()));
+        primaryStage.setScene(new MainScene(screen.getWidth(), screen.getHeight()));
         primaryStage.show();
     }
 }
