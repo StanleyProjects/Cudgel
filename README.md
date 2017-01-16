@@ -3,8 +3,8 @@ Cudgel project on JavaFX
 
 # Config
 	applicationId "stan.cudgel"
-	versionCode 1701170056
-	versionName "0.002"
+	versionCode 1701170236
+	versionName "0.003"
 
 # Build information
 ## build

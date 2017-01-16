@@ -1,24 +1,34 @@
 package stan.cudgel.modules.cudgel;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.application.Platform;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 
+import stan.cudgel.di.PlatformUtil;
+import stan.cudgel.contracts.CudgelContract;
+
 public class CudgelPane
     extends Pane
+    implements CudgelContract.View
 {
+    private CudgelContract.Presenter presenter;
+    private CudgelContract.Behaviour behaviour;
+    private PlatformUtil.ViewDragger viewDragger;
+    private PlatformUtil platformUtil;
+
     private CudgelButton cudgelButton;
 
-    public CudgelPane()
+    private boolean hover;
+
+    public CudgelPane(PlatformUtil pu, CudgelContract.Behaviour b)
     {
         super();
         setStyle("-fx-background-color: null");
         setPrefSize(144,144);
+        platformUtil = pu;
+        behaviour = b;
         initViews();
-        Platform.runLater(()->
+        platformUtil.runOnUiThread(()->
         {
             init();
         });
@@ -30,31 +40,41 @@ public class CudgelPane
     }
     private void init()
     {
-        cudgelButton.setOnAction(new EventHandler<ActionEvent>()
+        presenter = new CudgelPresenter(this, platformUtil);
+        hover = false;
+        hoverProperty().addListener((observable, oldValue, newValue)->
         {
-            @Override
-            public void handle(ActionEvent event)
+            //platformUtil.log(this, "hoverProperty oldValue " +oldValue+" newValue "+ newValue);
+            hover = newValue;
+        });
+        cudgelButton.setOnAction((event)->
+        {
+        });
+        cudgelButton.setOnMouseReleased((event)->
+        {
+            //platformUtil.log(this, "setOnMouseReleased " +event.getButton()+" "+ event.getEventType());
+            if(event.getButton() == MouseButton.PRIMARY)
             {
+                viewDragger = null;
+            }
+            else if(event.getButton() == MouseButton.SECONDARY && hover)
+            {
+                behaviour.exit();
             }
         });
-        cudgelButton.setOnMousePressed(new EventHandler<MouseEvent>()
+        cudgelButton.setOnMousePressed((event)->
         {
-            @Override
-            public void handle(MouseEvent event)
+            //platformUtil.log(this, "setOnMousePressed " +event.getButton()+" "+ event.getEventType());
+            if(event.getButton() == MouseButton.PRIMARY)
             {
-                if(event.getButton() == MouseButton.PRIMARY)
-                {
-                }
-                else if(event.getButton() == MouseButton.SECONDARY)
-                {
-                }
+                viewDragger = platformUtil.drag(CudgelPane.this, event.getScreenX(), event.getScreenY());
             }
         });
-        cudgelButton.setOnMouseDragged(new EventHandler<MouseEvent>()
+        cudgelButton.setOnMouseDragged((event)->
         {
-            @Override
-            public void handle(MouseEvent event)
+            if(event.getButton() == MouseButton.PRIMARY)
             {
+                viewDragger.drag(event.getScreenX(), event.getScreenY());
             }
         });
         moveCudgelButton();
