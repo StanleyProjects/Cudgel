@@ -52,15 +52,29 @@ public class JavaFXUtil
         Dragger(Node n, double x, double y)
         {
             node = n;
-            dX = node.getLayoutX() - x;
-            dY= node.getLayoutY() - y;
+            dX = Math.abs(node.getLayoutX() - x);
+            dY = Math.abs(node.getLayoutY() - y);
         }
 
         @Override
         public void drag(double newX, double newY)
         {
-            node.setLayoutX(newX + dX);
-            node.setLayoutY(newY + dY);
+            /*
+            if(Math.abs(node.getLayoutX() + dX - newX) < 36
+                && Math.abs(node.getLayoutY() + dY - newY) < 36)
+            {
+               return; 
+            }
+            */
+            /*
+            runOnUiThread(()->
+            {
+                node.setLayoutX(newX - dX);
+                node.setLayoutY(newY - dY);
+            });
+            */
+            node.setLayoutX(newX - dX);
+            node.setLayoutY(newY - dY);
         }
     }
 }

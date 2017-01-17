@@ -8,7 +8,9 @@ import stan.cudgel.di.DI;
 import stan.cudgel.di.PlatformUtil;
 import stan.cudgel.contracts.CudgelContract;
 import stan.cudgel.contracts.MainContract;
+import stan.cudgel.contracts.media.MusicPlayerContract;
 import stan.cudgel.modules.cudgel.CudgelPane;
+import stan.cudgel.modules.media.musicplayer.MusicPlayerPane;
 import stan.cudgel.utils.JavaFXUtil;
 
 public class MainScene
@@ -17,14 +19,19 @@ public class MainScene
 {
     private DI appComponent;
 
-    private CudgelPane cudgelPane;
+    private Pane cudgelPane;
+    private CudgelContract.Callback cudgelCallback;
+
+    private Pane musicPlayerPane;
 
     private MainContract.Presenter presenter;
 
     public MainScene(double width, double height)
     {
         super(new Pane(), width, height, Color.TRANSPARENT);
-        getStylesheets().add("css/cudgel.css");
+        getStylesheets().addAll(
+            "css/cudgel.css",
+            "css/media/musicplayer.css");
         appComponent = new AppComponent(new JavaFXUtil());
         presenter = new MainPresenter(this, appComponent.getPlatformUtil());
         initViews((Pane)getRoot());
@@ -48,9 +55,20 @@ public class MainScene
             {
                 presenter.exit();
             }
+        }, (c)->
+        {
+            cudgelCallback = c;
+        });
+        musicPlayerPane = new MusicPlayerPane(appComponent.getPlatformUtil(), new MusicPlayerContract.Behaviour()
+        {
+            @Override
+            public void close()
+            {
+                presenter.showMusicPlayer(false);
+            }
         });
         root.setVisible(false);
-        root.getChildren().add(cudgelPane);
+        root.getChildren().addAll(cudgelPane, musicPlayerPane);
         configRoot(root);
     }
     private void configRoot(Pane root)
@@ -63,12 +81,15 @@ public class MainScene
         cudgelPane.setLayoutX(getWidth()/2 - cudgelPane.getWidth()/2);
         cudgelPane.setLayoutY(getHeight()/2 - cudgelPane.getHeight()/2);
         getRoot().setVisible(true);
+        musicPlayerPane.setVisible(false);
         appComponent.getPlatformUtil().log(this, "w " + getWidth() + " h " + getHeight());
     }
 
     @Override
     public void showMusicPlayer(boolean show)
     {
+        cudgelCallback.showMusicPlayerButton(!show);
+        musicPlayerPane.setVisible(show);
     }
 
     private class AppComponent

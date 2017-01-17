@@ -12,7 +12,7 @@
     grey: #9E9E9E;
     white: #ffffff;
 }
-#cudgel_button_disable, #cudgel_button_none, #cudgel_button_enable, #settings_button {
+#cudgel_button_disable, #cudgel_button_none, #cudgel_button_enable, #settings_button, #musicplayer_button {
     -fx-background-radius: 5em;
     -fx-effect: dropshadow(three-pass-box, black, 3, 0, 0, 0);
     -fx-background-position: center;
@@ -56,11 +56,16 @@
     -fx-background-size: 24px;
     -fx-background-color: grey;
 }
-#settings_button:hover
+#musicplayer_button {
+    -fx-background-image: url("../res/cudgel/music_xh.png");
+    -fx-background-size: 24px;
+    -fx-background-color: blue;
+}
+#settings_button:hover, #musicplayer_button:hover
 {
     -fx-background-color: bluehover;
 }
-#settings_button:pressed
+#settings_button:pressed, #musicplayer_button:pressed
 {
     -fx-background-color: bluepressed;
 }

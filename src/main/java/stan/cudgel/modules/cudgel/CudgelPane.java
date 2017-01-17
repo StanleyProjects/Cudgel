@@ -1,11 +1,13 @@
 package stan.cudgel.modules.cudgel;
 
+import javafx.scene.control.Button;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 
 import stan.cudgel.di.PlatformUtil;
 import stan.cudgel.contracts.CudgelContract;
+import stan.cudgel.units.CallbackConnector;
 
 public class CudgelPane
     extends Pane
@@ -17,16 +19,25 @@ public class CudgelPane
     private PlatformUtil platformUtil;
 
     private CudgelButton cudgelButton;
+    private Button musicPlayerButton;
 
     private boolean hover;
 
-    public CudgelPane(PlatformUtil pu, CudgelContract.Behaviour b)
+    public CudgelPane(PlatformUtil pu, CudgelContract.Behaviour b, CallbackConnector<CudgelContract.Callback> connector)
     {
         super();
         setStyle("-fx-background-color: null");
         setPrefSize(144,144);
         platformUtil = pu;
         behaviour = b;
+        connector.setCallback(new CudgelContract.Callback()
+        {
+            @Override
+            public void showMusicPlayerButton(boolean show)
+            {
+                musicPlayerButton.setVisible(show);
+            }
+        });
         initViews();
         platformUtil.runOnUiThread(()->
         {
@@ -36,7 +47,10 @@ public class CudgelPane
     private void initViews()
     {
         cudgelButton = new CudgelButton();
-        getChildren().addAll(cudgelButton);
+        musicPlayerButton = new Button();
+        musicPlayerButton.setMinSize(36, 36);
+        musicPlayerButton.setId("musicplayer_button");
+        getChildren().addAll(cudgelButton, musicPlayerButton);
     }
     private void init()
     {
@@ -44,7 +58,7 @@ public class CudgelPane
         hover = false;
         hoverProperty().addListener((observable, oldValue, newValue)->
         {
-            //platformUtil.log(this, "hoverProperty oldValue " +oldValue+" newValue "+ newValue);
+            platformUtil.log(this, "hoverProperty oldValue " +oldValue+" newValue "+ newValue);
             hover = newValue;
         });
         cudgelButton.setOnAction((event)->
@@ -78,6 +92,12 @@ public class CudgelPane
             }
         });
         moveCudgelButton();
+        musicPlayerButton.setLayoutX(getWidth()/2 - musicPlayerButton.getWidth()/2);
+        musicPlayerButton.setLayoutY(0);
+        musicPlayerButton.setOnAction((event)->
+        {
+            behaviour.openMusicPlayer();
+        });
     }
 
     private void moveCudgelButton()

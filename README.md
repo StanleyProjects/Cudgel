@@ -3,8 +3,8 @@ Cudgel project on JavaFX
 
 # Config
 	applicationId "stan.cudgel"
-	versionCode 1701170236
-	versionName "0.003"
+	versionCode 1701170348
+	versionName "0.004"
 
 # Build information
 ## build
@@ -14,7 +14,7 @@ javac -sourcepath ./src/main/java -d bin -classpath lib/* ./src/main/java/stan/c
 
 ## build css
 ```
-javafxpackager -createbss -srcdir ./src/main/css -outdir bin/css -srcfiles cudgel.css -v
+javafxpackager -createbss -srcdir ./src/main/css -outdir bin/css -srcfiles cudgel.css;media/musicplayer.css -v
 ```
 
 ## copy res
