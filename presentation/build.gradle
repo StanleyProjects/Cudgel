@@ -1,0 +1,10 @@
+apply plugin: 'application'
+
+mainClassName = "stan.cudgel.App"
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+dependencies {
+    compile project(':implementation')
+}
