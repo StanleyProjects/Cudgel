@@ -4,10 +4,16 @@ public interface MainContract
 {
     interface View
     {
-    	void showMusicPlayer(boolean show);
+    }
+    interface Router
+    {
+        void showSettings(boolean show);
+        void showMusicPlayer(boolean show);
+    	void exit();
     }
     interface Presenter
     {
+        void showSettings(boolean show);
     	void showMusicPlayer(boolean show);
     	void exit();
     }

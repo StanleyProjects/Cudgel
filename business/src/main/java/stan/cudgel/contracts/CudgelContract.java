@@ -12,10 +12,12 @@ public interface CudgelContract
     interface Behaviour
     {
         void openMusicPlayer();
+        void openSettings();
         void exit();
     }
     interface Callback
     {
         void showMusicPlayerButton(boolean show);
+        void showSettingsButton(boolean show);
     }
 }

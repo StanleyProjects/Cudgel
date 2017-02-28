@@ -22,7 +22,7 @@ public class App
         return appComponent;
     }
 
-    public static void main(String[] args)
+    static public void main(String[] args)
     {
         launch(args);
     }
@@ -32,8 +32,11 @@ public class App
         appComponent = new Component(new JavaFXUtil());
         primaryStage.initStyle(StageStyle.TRANSPARENT);
         primaryStage.setAlwaysOnTop(true);
+        //primaryStage.setFullScreen(true);
         Rectangle2D screen = Screen.getPrimary().getVisualBounds();
         primaryStage.setScene(new MainScene(screen.getWidth(), screen.getHeight()));
+        //primaryStage.setScene(new MainScene(256, 256));
+        //primaryStage.setScene(new MainScene(0, 0));
         primaryStage.show();
     }
 

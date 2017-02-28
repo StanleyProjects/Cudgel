@@ -1,22 +1,18 @@
 package stan.cudgel.modules.main;
 
 import stan.cudgel.contracts.MainContract;
-import stan.cudgel.di.PlatformUtil;
-import stan.cudgel.units.mvp.Presenter;
+import stan.cudgel.units.mvp.RouterPresenter;
 
 public class MainPresenter
-    extends Presenter<MainContract.View>
+    extends RouterPresenter<MainContract.View, MainContract.Router>
     implements MainContract.Presenter
 {
-    private MainContract.View view;
-
-    private PlatformUtil platformUtil;
     private boolean showMusicPlayer;
+    private boolean showSettings;
 
-    MainPresenter(MainContract.View v, PlatformUtil pu)
+    MainPresenter(MainContract.View v, MainContract.Router r)
     {
-        super(v);
-        platformUtil = pu;
+        super(v, r);
         showMusicPlayer = false;
     }
 
@@ -25,11 +21,19 @@ public class MainPresenter
         if(showMusicPlayer != show)
         {
             showMusicPlayer = show;
-            getView().showMusicPlayer(show);
+            getRouter().showMusicPlayer(show);
+        }
+    }
+    public void showSettings(boolean show)
+    {
+        if(showSettings != show)
+        {
+            showSettings = show;
+            getRouter().showSettings(show);
         }
     }
     public void exit()
     {
-        platformUtil.exit();
+        getRouter().exit();
     }
 }

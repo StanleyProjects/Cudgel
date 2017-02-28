@@ -1,6 +1,7 @@
 package stan.cudgel.units.ui;
 
 import javafx.application.Platform;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
@@ -30,6 +31,39 @@ public abstract class MVPPane<P>
         node.setLayoutX(x);
         node.setLayoutY(y);
     }
+    final protected void setStyle(Node node, String normal, String hover, String pressed)
+    {
+        node.setStyle(normal);
+        node.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> node.setStyle(pressed));
+        node.addEventHandler(MouseEvent.MOUSE_RELEASED, event -> node.setStyle(node.isHover() ? hover : normal));
+        node.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> node.setStyle(hover));
+        node.addEventHandler(MouseEvent.MOUSE_EXITED, event -> 
+        {
+            if(!node.isPressed())
+            {
+                node.setStyle(normal);
+            }
+        });
+    }
+    final protected void setSize(Node node, int w, int h)
+    {
+        //node.resize(w, h);
+        node.minHeight(h);
+        node.prefHeight(h);
+        node.maxHeight(h);
+        node.minWidth(w);
+        node.prefWidth(w);
+        node.maxWidth(w);
+        /*
+        node.setMinSize(w, h);
+        node.setPrefSize(w, h);
+        node.setMaxSize(w, h);
+        */
+    }
+    final protected void setSize(Node node, int size)
+    {
+        setSize(node, size, size);
+    }
     final protected void addChildrens(Node... childrens)
     {
         getChildren().addAll(childrens);
@@ -46,7 +80,6 @@ public abstract class MVPPane<P>
     {
         new Thread(r)
         {
-            @Override
             public void run()
             {
                 try

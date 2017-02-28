@@ -1,6 +1,7 @@
 package stan.cudgel.units.ui;
 
 import javafx.application.Platform;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -33,6 +34,20 @@ public abstract class MVPScene<P>
     {
         node.setLayoutX(x);
         node.setLayoutY(y);
+    }
+    final protected void setStyle(Node node, String normal, String hover, String pressed)
+    {
+        node.setStyle(normal);
+        node.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> node.setStyle(pressed));
+        node.addEventHandler(MouseEvent.MOUSE_RELEASED, event -> node.setStyle(node.isHover() ? hover : normal));
+        node.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> node.setStyle(hover));
+        node.addEventHandler(MouseEvent.MOUSE_EXITED, event -> 
+        {
+            if(!node.isPressed())
+            {
+                node.setStyle(normal);
+            }
+        });
     }
     final protected void addChildrens(Node... childrens)
     {

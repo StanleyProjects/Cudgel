@@ -5,6 +5,14 @@ mainClassName = "stan.cudgel.App"
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
+sourceSets {
+    main {
+        resources {
+            srcDirs "src/main/res"
+        }
+    }
+}
+
 dependencies {
     compile project(':implementation')
 }
