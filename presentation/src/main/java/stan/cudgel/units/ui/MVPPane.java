@@ -45,6 +45,11 @@ public abstract class MVPPane<P>
             }
         });
     }
+    final protected void setScale(Node node, double s)
+    {
+        node.setScaleX(s);
+        node.setScaleY(s);
+    }
     final protected void setSize(Node node, int w, int h)
     {
         //node.resize(w, h);

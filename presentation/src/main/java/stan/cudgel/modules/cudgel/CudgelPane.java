@@ -2,7 +2,6 @@ package stan.cudgel.modules.cudgel;
 
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BackgroundRepeat;
 
 import stan.cudgel.di.PlatformUtil;
@@ -11,6 +10,7 @@ import stan.cudgel.units.CallbackConnector;
 import stan.cudgel.units.ui.MVPPane;
 import stan.cudgel.utils.CSS;
 import stan.cudgel.R;
+import stan.cudgel.utils.ValueAnimator;
 
 public class CudgelPane
     extends MVPPane<CudgelContract.Presenter>
@@ -19,6 +19,7 @@ public class CudgelPane
     {
         int pane_size = 144;
         int small_button_size = 32;
+        int scale_animation_time = 200;
 
         CSS small_button = new CSS()
                 .addFxEffectDropshadow(CSS.FxEffectBlurType.THREE_PASS_BOX, R.colors.BLACK, 3, 0, 0, 0)
@@ -75,11 +76,71 @@ public class CudgelPane
         {
             public void showMusicPlayerButton(boolean show)
             {
+                /*
+                if(show)
+                {
+                    ValueAnimator.create(1000, 0, Styles.small_button_size, i -> musicPlayerButton.setMinSize(i, i)).animate();
+                }
+                else
+                {
+                    ValueAnimator.create(1000, Styles.small_button_size, 0, i -> musicPlayerButton.setMinSize(i, i)).animate();
+                }
+                */
                 musicPlayerButton.setVisible(show);
             }
             public void showSettingsButton(boolean show)
             {
-                settingsButton.setVisible(show);
+//                ValueAnimator.Updater<Double> scaleUpdater = d -> runOnUiThread(() -> setScale(settingsButton, d));
+                ValueAnimator.Updater<Double> scaleUpdater = d ->
+                {
+//                    System.out.println("d " + d);
+                    runOnUiThread(() ->
+                    {
+                        System.out.println("setScale " + d);
+                        //setScale(settingsButton, d);
+                        settingsButton.setScaleX(d);
+                        settingsButton.setScaleY(d);
+                        settingsButton.setOpacity(d);
+                    });
+                };
+                ValueAnimator.Interpolator<Double> scaleInterpolator = ValueAnimator.linearDoubleInterpolator;
+//                ValueAnimator.Interpolator<Double> scaleInterpolator = new ValueAnimator.AccelerateDoubleInterpolator(2);
+                if(show)
+                {
+                    ValueAnimator.create(Styles.scale_animation_time, 0, 1, scaleUpdater, scaleInterpolator).setAnimationListener(new ValueAnimator.AnimationListener()
+                    {
+                        public void begin()
+                        {
+                            System.err.println("animation show begin");
+                            //runOnUiThread(()->settingsButton.setVisible(true));
+                        }
+                        public void end()
+                        {
+                            System.err.println("animation show end");
+                        }
+                        public void cancel()
+                        {
+                        }
+                    }).animate();
+                }
+                else
+                {
+                    ValueAnimator.create(Styles.scale_animation_time, 1, 0, scaleUpdater, scaleInterpolator).setAnimationListener(new ValueAnimator.AnimationListener()
+                    {
+                        public void begin()
+                        {
+                            System.err.println("animation show begin");
+                        }
+                        public void end()
+                        {
+                            System.err.println("animation show end");
+//                            runOnUiThread(()->settingsButton.setVisible(false));
+                        }
+                        public void cancel()
+                        {
+                        }
+                    }).animate();
+                }
             }
         });
     }

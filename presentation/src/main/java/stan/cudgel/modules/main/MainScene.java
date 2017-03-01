@@ -10,10 +10,16 @@ import stan.cudgel.contracts.SettingsContract;
 import stan.cudgel.modules.cudgel.CudgelPane;
 import stan.cudgel.modules.settings.SettingsPane;
 import stan.cudgel.units.ui.MVPScene;
+import stan.cudgel.utils.ValueAnimator;
 
 public class MainScene
     extends MVPScene<MainContract.Presenter>
 {
+    private interface Styles
+    {
+        int scale_animation_time = 300;
+    }
+
     private Pane cudgelPane;
     private Pane settingsPane;
     private CudgelContract.Callback cudgelCallback;
@@ -26,7 +32,52 @@ public class MainScene
         public void showSettings(boolean show)
         {
             cudgelCallback.showSettingsButton(!show);
-            settingsPane.setVisible(show);
+            ValueAnimator.Updater<Double> scaleUpdater = d -> runOnUiThread(() -> setScale(settingsPane, d));
+//            ValueAnimator.Updater<Double> scaleUpdater = d ->
+//            {
+//                System.err.println("d " + d);
+//                runOnUiThread(() -> setScale(settingsPane, d));
+////                runOnUiThread(() ->
+////                {
+////                    settingsPane.setOpacity(d/2 + 0.5);
+////                });
+//            };
+//            ValueAnimator.Interpolator<Double> scaleInterpolator = new ValueAnimator.AccelerateDoubleInterpolator(2);
+//            ValueAnimator.Interpolator<Double> scaleInterpolator = new ValueAnimator.AccelerateDecelerateDoubleInterpolator(5);
+            ValueAnimator.Interpolator<Double> scaleInterpolator = ValueAnimator.linearDoubleInterpolator;
+            if(show)
+            {
+                ValueAnimator.create(Styles.scale_animation_time, 0, 1, scaleUpdater, scaleInterpolator).setAnimationListener(new ValueAnimator.AnimationListener()
+                {
+                    public void begin()
+                    {
+                        runOnUiThread(()->settingsPane.setVisible(true));
+                    }
+                    public void end()
+                    {
+                    }
+                    public void cancel()
+                    {
+                    }
+                }).animate();
+            }
+            else
+            {
+                ValueAnimator.create(Styles.scale_animation_time, 1, 0, scaleUpdater, scaleInterpolator).setAnimationListener(new ValueAnimator.AnimationListener()
+                {
+                    public void begin()
+                    {
+                    }
+                    public void end()
+                    {
+//                        runOnUiThread(()->settingsPane.setVisible(false));
+                    }
+                    public void cancel()
+                    {
+                    }
+                }).animate();
+            }
+//            settingsPane.setVisible(show);
         }
         public void showMusicPlayer(boolean show)
         {

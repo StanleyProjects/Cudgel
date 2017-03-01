@@ -35,6 +35,11 @@ public abstract class MVPScene<P>
         node.setLayoutX(x);
         node.setLayoutY(y);
     }
+    final protected void setScale(Node node, double s)
+    {
+        node.setScaleX(s);
+        node.setScaleY(s);
+    }
     final protected void setStyle(Node node, String normal, String hover, String pressed)
     {
         node.setStyle(normal);
