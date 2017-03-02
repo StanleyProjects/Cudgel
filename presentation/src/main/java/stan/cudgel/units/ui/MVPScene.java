@@ -1,6 +1,7 @@
 package stan.cudgel.units.ui;
 
 import javafx.application.Platform;
+import javafx.scene.CacheHint;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.Node;
@@ -17,6 +18,9 @@ public abstract class MVPScene<P>
     public MVPScene(Pane pane, String css, double width, double height, Color color)
     {
         super(pane, width, height, color);
+        pane.setCache(true);
+        pane.setCacheHint(CacheHint.QUALITY);
+//        pane.setCache(false);
         root = pane;
         tag = "["+getClass().getName().replace(getClass().getPackage().getName()+".", "")+"]";
         initViews(root);
@@ -37,8 +41,16 @@ public abstract class MVPScene<P>
     }
     final protected void setScale(Node node, double s)
     {
-        node.setScaleX(s);
-        node.setScaleY(s);
+        s = (int)(s*100);
+        s /= 100;
+        if(node.getScaleX() != s)
+        {
+            node.setScaleX(s);
+        }
+        if(node.getScaleY() != s)
+        {
+            node.setScaleY(s);
+        }
     }
     final protected void setStyle(Node node, String normal, String hover, String pressed)
     {
@@ -60,7 +72,7 @@ public abstract class MVPScene<P>
     }
     final protected void log(String message)
     {
-        System.out.println(tag +": "+ message);
+        System.err.println(tag +": "+ message);
     }
     final protected void runOnNewThread(Runnable r)
     {
@@ -77,7 +89,7 @@ public abstract class MVPScene<P>
                 {
                     sleep(ms);
                 }
-                catch(InterruptedException e)
+                catch(InterruptedException ignored)
                 {
                 }
                 super.run();

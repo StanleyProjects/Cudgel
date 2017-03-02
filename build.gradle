@@ -2,7 +2,7 @@
 allprojects {
   ext {
     applicationId = 'stan.cudgel'
-    versionCode = 1702212126
-    versionName = "0.0.5"
+    versionCode = 1703022122
+    versionName = "0.0.6"
   }
 }

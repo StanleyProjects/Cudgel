@@ -10,6 +10,7 @@ import stan.cudgel.contracts.SettingsContract;
 import stan.cudgel.modules.cudgel.CudgelPane;
 import stan.cudgel.modules.settings.SettingsPane;
 import stan.cudgel.units.ui.MVPScene;
+import stan.cudgel.utils.CSS;
 import stan.cudgel.utils.ValueAnimator;
 
 public class MainScene
@@ -18,6 +19,10 @@ public class MainScene
     private interface Styles
     {
         int scale_animation_time = 300;
+
+        String main = new CSS()
+                .addFxBackgroundColor("null")
+                .generate();
     }
 
     private Pane cudgelPane;
@@ -32,52 +37,7 @@ public class MainScene
         public void showSettings(boolean show)
         {
             cudgelCallback.showSettingsButton(!show);
-            ValueAnimator.Updater<Double> scaleUpdater = d -> runOnUiThread(() -> setScale(settingsPane, d));
-//            ValueAnimator.Updater<Double> scaleUpdater = d ->
-//            {
-//                System.err.println("d " + d);
-//                runOnUiThread(() -> setScale(settingsPane, d));
-////                runOnUiThread(() ->
-////                {
-////                    settingsPane.setOpacity(d/2 + 0.5);
-////                });
-//            };
-//            ValueAnimator.Interpolator<Double> scaleInterpolator = new ValueAnimator.AccelerateDoubleInterpolator(2);
-//            ValueAnimator.Interpolator<Double> scaleInterpolator = new ValueAnimator.AccelerateDecelerateDoubleInterpolator(5);
-            ValueAnimator.Interpolator<Double> scaleInterpolator = ValueAnimator.linearDoubleInterpolator;
-            if(show)
-            {
-                ValueAnimator.create(Styles.scale_animation_time, 0, 1, scaleUpdater, scaleInterpolator).setAnimationListener(new ValueAnimator.AnimationListener()
-                {
-                    public void begin()
-                    {
-                        runOnUiThread(()->settingsPane.setVisible(true));
-                    }
-                    public void end()
-                    {
-                    }
-                    public void cancel()
-                    {
-                    }
-                }).animate();
-            }
-            else
-            {
-                ValueAnimator.create(Styles.scale_animation_time, 1, 0, scaleUpdater, scaleInterpolator).setAnimationListener(new ValueAnimator.AnimationListener()
-                {
-                    public void begin()
-                    {
-                    }
-                    public void end()
-                    {
-//                        runOnUiThread(()->settingsPane.setVisible(false));
-                    }
-                    public void cancel()
-                    {
-                    }
-                }).animate();
-            }
-//            settingsPane.setVisible(show);
+            (show ? settingsShowAnimator : settingsHideAnimator).animate();
         }
         public void showMusicPlayer(boolean show)
         {
@@ -89,9 +49,46 @@ public class MainScene
         }
     };
 
+    private final ValueAnimator.Updater<Double> settingsScaleUpdater = d -> runOnUiThread(() -> setScale(settingsPane, d));
+    private final ValueAnimator.Interpolator<Double> settingsHideScaleInterpolator = new ValueAnimator.AccelerateDoubleInterpolator(2);
+    private final ValueAnimator.Interpolator<Double> settingsShowScaleInterpolator = new ValueAnimator.DecelerateDoubleInterpolator(2);
+    private final ValueAnimator.AnimationListener settingsHideAnimationListener = new ValueAnimator.AnimationListener()
+    {
+        public void begin()
+        {
+            runOnUiThread(()->settingsPane.setDisable(true));
+        }
+        public void end()
+        {
+            runOnUiThread(()->settingsPane.setVisible(false));
+        }
+        public void cancel()
+        {
+        }
+    };
+    private final ValueAnimator.AnimationListener settingsShowAnimationListener = new ValueAnimator.AnimationListener()
+    {
+        public void begin()
+        {
+            runOnUiThread(()->settingsPane.setVisible(true));
+        }
+        public void end()
+        {
+            runOnUiThread(()->settingsPane.setDisable(false));
+        }
+        public void cancel()
+        {
+        }
+    };
+    private final ValueAnimator.Animator settingsShowAnimator = ValueAnimator.create(Styles.scale_animation_time, 0.01, 1, settingsScaleUpdater, settingsShowScaleInterpolator).setAnimationListener(settingsShowAnimationListener);
+    private final ValueAnimator.Animator settingsHideAnimator = ValueAnimator.create(Styles.scale_animation_time, 1, 0.01, settingsScaleUpdater, settingsHideScaleInterpolator).setAnimationListener(settingsHideAnimationListener);
+
     public MainScene(double width, double height)
     {
-        super(new Pane(), "-fx-background-color: null", width, height, Color.TRANSPARENT);
+        super(new Pane(), Styles.main, width, height, Color.TRANSPARENT);
+        getStylesheets().add("style.css");
+//        getStylesheets().add("data:text/css;charset=utf-8,.root {-fx-background-color : red}");
+//        getStylesheets().add("data:text/css;charset=utf-8,.root%7B%0D%0A%20%20%20%20-fx-font-family%3A%20%22Muli%22%3B%0D%0A%20%20%20%20-fx-font-weight%3A%20lighter%3B%0D%0A%20%20%20%20-fx-font-size%3A%2035pt%3B%0D%0A%20%20%20%20-fx-padding%3A%200%3B%0D%0A%20%20%20%20-fx-spacing%3A%200%3B%0D%0A%7D");
     }
     protected void initViews(Pane root)
     {
@@ -128,6 +125,7 @@ public class MainScene
             ,getWidth()/2 - settingsPane.getWidth()/2
             ,getHeight()/2 - settingsPane.getHeight()/2);
         settingsPane.setVisible(false);
+        setScale(settingsPane, 0);
         setPresenter(new MainPresenter(view, router));
     }
 }

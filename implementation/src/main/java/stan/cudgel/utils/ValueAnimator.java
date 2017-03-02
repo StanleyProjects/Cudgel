@@ -54,7 +54,23 @@ public abstract class ValueAnimator
         @Override
         public Double interpolate(long time, long timePassed, Double begin, Double end)
         {
-            return begin + (end - begin)*Math.pow((timePassed*(end - begin)/time)/(end - begin), factor);
+            return begin + (end - begin)*Math.pow(timePassed*(end - begin)/time, factor);
+        }
+    }
+    static public class DecelerateDoubleInterpolator
+            implements Interpolator<Double>
+    {
+        private double factor;
+
+        public DecelerateDoubleInterpolator(double f)
+        {
+            factor = f;
+        }
+
+        @Override
+        public Double interpolate(long time, long timePassed, Double begin, Double end)
+        {
+            return begin + (end - begin)*(1-Math.pow((1-Math.abs(timePassed*(end - begin))/time), factor));
         }
     }
     static public class AccelerateDecelerateDoubleInterpolator
@@ -70,7 +86,36 @@ public abstract class ValueAnimator
         @Override
         public Double interpolate(long time, long timePassed, Double begin, Double end)
         {
-            return begin + (end - begin)*Math.pow(Math.sin(Math.PI*((timePassed*(end - begin)/time)/(end - begin))-Math.PI/2)/2+0.5, factor);
+            return begin + (end - begin)*Math.pow(Math.sin(Math.PI*(timePassed/(double)time)-Math.PI/2)/2+0.5, factor);
+        }
+    }
+    static public class BounceDoubleInterpolator
+            implements Interpolator<Double>
+    {
+        @Override
+        public Double interpolate(long time, long timePassed, Double begin, Double end)
+        {
+            double l = end - begin;
+            double t = timePassed;
+            t /= time;
+            double d = l;
+            if(t<0.31489)
+            {
+                d *= 8*(1.1226*t)*(1.1226*t);
+            }
+            else if(t<0.65990)
+            {
+                d *= 8*(1.1226*t-0.54719)*(1.1226*t-0.54719) + 0.7;
+            }
+            else if(t<0.85908)
+            {
+                d *= 8*(1.1226*t-0.8526)*(1.1226*t-0.8526) + 0.9;
+            }
+            else
+            {
+                d *= 8*(1.1226*t-1.0435)*(1.1226*t-1.0435) + 0.95;
+            }
+            return begin + d;
         }
     }
     static public class Animator<T>
@@ -84,7 +129,8 @@ public abstract class ValueAnimator
         private AnimationListener animationListener;
 
         private long timeBegin;
-        private long timeNow;
+//        volatile private long timePassed;
+        volatile private long timeNow;
         private long timeEnd;
 
         private Animator(long t, T b, T e, Updater<T> u, Interpolator<T> inter)
@@ -110,13 +156,21 @@ public abstract class ValueAnimator
                 }
                 while(timeNow < timeEnd && !isCancel)
                 {
+//                    long tP = timePassed;
                     T oldValue = interpolator.interpolate(time, timeNow-timeBegin, beginValue, endValue);
                     updater.update(oldValue);
                     timeNow = System.currentTimeMillis();
+//                    timePassed = timeNow-timeBegin;
+//                    while((oldValue.equals(interpolator.interpolate(time, timePassed, beginValue, endValue)) || timePassed - tP < 50) && timeNow < timeEnd && !isCancel)
+//                    {
+//                        timeNow = System.currentTimeMillis();
+//                        timePassed = timeNow-timeBegin;
+//                    }
                     while(oldValue.equals(interpolator.interpolate(time, timeNow-timeBegin, beginValue, endValue)) && timeNow < timeEnd && !isCancel)
                     {
                         timeNow = System.currentTimeMillis();
                     }
+                    //System.out.println("tP " + (timePassed - tP));
                 }
                 if(isCancel)
                 {

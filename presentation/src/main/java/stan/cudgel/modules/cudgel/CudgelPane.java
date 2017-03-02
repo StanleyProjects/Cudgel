@@ -19,8 +19,11 @@ public class CudgelPane
     {
         int pane_size = 144;
         int small_button_size = 32;
-        int scale_animation_time = 200;
+        int scale_animation_time = 300;
 
+        String main = new CSS()
+                .addFxBackgroundColor("null")
+                .generate();
         CSS small_button = new CSS()
                 .addFxEffectDropshadow(CSS.FxEffectBlurType.THREE_PASS_BOX, R.colors.BLACK, 3, 0, 0, 0)
                 .addFxBackgroundRadius(small_button_size/2)
@@ -67,80 +70,112 @@ public class CudgelPane
     private Button musicPlayerButton;
     private Button settingsButton;
 
+    private final ValueAnimator.Updater<Double> settingsScaleUpdater = d -> runOnUiThread(() -> setScale(settingsButton, d));
+    private final ValueAnimator.Updater<Double> cudgelButtonScaleUpdater = d -> runOnUiThread(() -> setScale(cudgelButton, d));
+    private final ValueAnimator.Updater<Double> musicPlayerButtonScaleUpdater = d -> runOnUiThread(() -> setScale(musicPlayerButton, d));
+    private final ValueAnimator.Interpolator<Double> settingsHideScaleInterpolator = new ValueAnimator.AccelerateDoubleInterpolator(2);
+    private final ValueAnimator.Interpolator<Double> settingsShowScaleInterpolator = new ValueAnimator.DecelerateDoubleInterpolator(2);
+//    private final ValueAnimator.Interpolator<Double> settingsHideScaleInterpolator = new ValueAnimator.BounceDoubleInterpolator();
+//    private final ValueAnimator.Interpolator<Double> settingsShowScaleInterpolator = settingsHideScaleInterpolator;
+    private final ValueAnimator.Interpolator<Double> cudgelButtonShowScaleInterpolator = new ValueAnimator.DecelerateDoubleInterpolator(2);
+    private final ValueAnimator.Interpolator<Double> musicPlayerButtonHideScaleInterpolator = new ValueAnimator.AccelerateDoubleInterpolator(2);
+    private final ValueAnimator.Interpolator<Double> musicPlayerButtonShowScaleInterpolator = new ValueAnimator.DecelerateDoubleInterpolator(2);
+    private final ValueAnimator.AnimationListener settingsHideAnimationListener = new ValueAnimator.AnimationListener()
+    {
+        public void begin()
+        {
+            runOnUiThread(()->settingsButton.setDisable(true));
+        }
+        public void end()
+        {
+            runOnUiThread(()->settingsButton.setVisible(false));
+        }
+        public void cancel()
+        {
+        }
+    };
+    private final ValueAnimator.AnimationListener settingsShowAnimationListener = new ValueAnimator.AnimationListener()
+    {
+        public void begin()
+        {
+            runOnUiThread(()->settingsButton.setVisible(true));
+        }
+        public void end()
+        {
+            runOnUiThread(()->settingsButton.setDisable(false));
+        }
+        public void cancel()
+        {
+        }
+    };
+    private final ValueAnimator.AnimationListener cudgelButtonShowAnimationListener = new ValueAnimator.AnimationListener()
+    {
+        @Override
+        public void begin()
+        {
+            runOnUiThread(()->cudgelButton.setVisible(true));
+        }
+        @Override
+        public void end()
+        {
+        }
+        @Override
+        public void cancel()
+        {
+        }
+    };
+    private final ValueAnimator.AnimationListener musicPlayerButtonHideAnimationListener = new ValueAnimator.AnimationListener()
+    {
+        @Override
+        public void begin()
+        {
+        }
+        @Override
+        public void end()
+        {
+            runOnUiThread(()->musicPlayerButton.setVisible(false));
+        }
+        @Override
+        public void cancel()
+        {
+        }
+    };
+    private final ValueAnimator.AnimationListener musicPlayerButtonShowAnimationListener = new ValueAnimator.AnimationListener()
+    {
+        @Override
+        public void begin()
+        {
+            runOnUiThread(()->musicPlayerButton.setVisible(true));
+        }
+        @Override
+        public void end()
+        {
+        }
+        @Override
+        public void cancel()
+        {
+        }
+    };
+    private final ValueAnimator.Animator settingsShowAnimator = ValueAnimator.create(Styles.scale_animation_time, 0.01, 1, settingsScaleUpdater, settingsShowScaleInterpolator).setAnimationListener(settingsShowAnimationListener);
+    private final ValueAnimator.Animator settingsHideAnimator = ValueAnimator.create(Styles.scale_animation_time, 1, 0.01, settingsScaleUpdater, settingsHideScaleInterpolator).setAnimationListener(settingsHideAnimationListener);
+    private final ValueAnimator.Animator cudgelButtonShowAnimator = ValueAnimator.create(Styles.scale_animation_time, 0.01, 1, cudgelButtonScaleUpdater, cudgelButtonShowScaleInterpolator).setAnimationListener(cudgelButtonShowAnimationListener);
+    private final ValueAnimator.Animator musicPlayerButtonShowAnimator = ValueAnimator.create(Styles.scale_animation_time, 0.01, 1, musicPlayerButtonScaleUpdater, musicPlayerButtonShowScaleInterpolator).setAnimationListener(musicPlayerButtonShowAnimationListener);
+    private final ValueAnimator.Animator musicPlayerButtonHideAnimator = ValueAnimator.create(Styles.scale_animation_time, 1, 0.01, musicPlayerButtonScaleUpdater, musicPlayerButtonHideScaleInterpolator).setAnimationListener(musicPlayerButtonHideAnimationListener);
+
     public CudgelPane(PlatformUtil pu, CudgelContract.Behaviour b, CallbackConnector<CudgelContract.Callback> connector)
     {
-        super("-fx-background-color: null", Styles.pane_size, Styles.pane_size);
+        super(Styles.main, Styles.pane_size, Styles.pane_size);
         platformUtil = pu;
         behaviour = b;
         connector.set(new CudgelContract.Callback()
         {
             public void showMusicPlayerButton(boolean show)
             {
-                /*
-                if(show)
-                {
-                    ValueAnimator.create(1000, 0, Styles.small_button_size, i -> musicPlayerButton.setMinSize(i, i)).animate();
-                }
-                else
-                {
-                    ValueAnimator.create(1000, Styles.small_button_size, 0, i -> musicPlayerButton.setMinSize(i, i)).animate();
-                }
-                */
-                musicPlayerButton.setVisible(show);
+                (show ? musicPlayerButtonShowAnimator : musicPlayerButtonHideAnimator).animate();
             }
             public void showSettingsButton(boolean show)
             {
-//                ValueAnimator.Updater<Double> scaleUpdater = d -> runOnUiThread(() -> setScale(settingsButton, d));
-                ValueAnimator.Updater<Double> scaleUpdater = d ->
-                {
-//                    System.out.println("d " + d);
-                    runOnUiThread(() ->
-                    {
-                        System.out.println("setScale " + d);
-                        //setScale(settingsButton, d);
-                        settingsButton.setScaleX(d);
-                        settingsButton.setScaleY(d);
-                        settingsButton.setOpacity(d);
-                    });
-                };
-                ValueAnimator.Interpolator<Double> scaleInterpolator = ValueAnimator.linearDoubleInterpolator;
-//                ValueAnimator.Interpolator<Double> scaleInterpolator = new ValueAnimator.AccelerateDoubleInterpolator(2);
-                if(show)
-                {
-                    ValueAnimator.create(Styles.scale_animation_time, 0, 1, scaleUpdater, scaleInterpolator).setAnimationListener(new ValueAnimator.AnimationListener()
-                    {
-                        public void begin()
-                        {
-                            System.err.println("animation show begin");
-                            //runOnUiThread(()->settingsButton.setVisible(true));
-                        }
-                        public void end()
-                        {
-                            System.err.println("animation show end");
-                        }
-                        public void cancel()
-                        {
-                        }
-                    }).animate();
-                }
-                else
-                {
-                    ValueAnimator.create(Styles.scale_animation_time, 1, 0, scaleUpdater, scaleInterpolator).setAnimationListener(new ValueAnimator.AnimationListener()
-                    {
-                        public void begin()
-                        {
-                            System.err.println("animation show begin");
-                        }
-                        public void end()
-                        {
-                            System.err.println("animation show end");
-//                            runOnUiThread(()->settingsButton.setVisible(false));
-                        }
-                        public void cancel()
-                        {
-                        }
-                    }).animate();
-                }
+                (show ? settingsShowAnimator : settingsHideAnimator).animate();
             }
         });
     }
@@ -189,5 +224,14 @@ public class CudgelPane
         musicPlayerButton.setOnAction(event -> behaviour.openMusicPlayer());
         moveNode(settingsButton, 0, getHeight()/2 - musicPlayerButton.getHeight()/2);
         settingsButton.setOnAction(event -> behaviour.openSettings());
+        settingsButton.setVisible(false);
+        cudgelButton.setVisible(false);
+        musicPlayerButton.setVisible(false);
+        setScale(settingsButton, 0.01);
+        setScale(cudgelButton, 0.01);
+        setScale(musicPlayerButton, 0.01);
+        cudgelButtonShowAnimator.animate();
+        runOnNewThread(settingsShowAnimator::animate, 200);
+        runOnNewThread(musicPlayerButtonShowAnimator::animate, 400);
     }
 }

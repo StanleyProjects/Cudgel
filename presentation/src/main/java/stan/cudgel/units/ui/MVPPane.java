@@ -1,6 +1,7 @@
 package stan.cudgel.units.ui;
 
 import javafx.application.Platform;
+import javafx.scene.CacheHint;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.Node;
@@ -15,6 +16,9 @@ public abstract class MVPPane<P>
     public MVPPane(String css, double width, double height)
     {
         super();
+        setCache(true);
+        setCacheHint(CacheHint.QUALITY);
+//        setCache(false);
         setStyle(css);
         setPrefSize(width,height);
         tag = "["+getClass().getName().replace(getClass().getPackage().getName()+".", "")+"]";
@@ -47,8 +51,16 @@ public abstract class MVPPane<P>
     }
     final protected void setScale(Node node, double s)
     {
-        node.setScaleX(s);
-        node.setScaleY(s);
+        s = (int)(s*100);
+        s /= 100;
+        if(node.getScaleX() != s)
+        {
+            node.setScaleX(s);
+        }
+        if(node.getScaleY() != s)
+        {
+            node.setScaleY(s);
+        }
     }
     final protected void setSize(Node node, int w, int h)
     {
@@ -75,7 +87,7 @@ public abstract class MVPPane<P>
     }
     final protected void log(String message)
     {
-        System.out.println(tag +": "+ message);
+        System.err.println(tag +": "+ message);
     }
     final protected void runOnNewThread(Runnable r)
     {

@@ -1,0 +1,7 @@
+
+.button:disabled, .button:default:disabled {
+    -fx-opacity: 1;
+}
+.label:disabled, .label:default:disabled {
+    -fx-opacity: 1;
+}

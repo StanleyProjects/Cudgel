@@ -48,16 +48,19 @@ public class SettingsPane
                     .addClearFocusBorder()
                     .addFxBackgroundPosition(CSS.FxBackgroundPosition.CENTER)
                     .addFxBackgroundRepeat(BackgroundRepeat.NO_REPEAT)
-                    .addFxBackgroundSize(Toolbar.height/2)
+//                    .addFxBackgroundSize(Toolbar.height/2)
                     .addFxBackgroundRadius(0)
                     .addFxBackgroundImage(R.images.CLOSE);
             String normal = main.copy()
+                    .addFxBackgroundSize(Toolbar.height/2)
                     .addFxBackgroundColor(R.colors.TRANSPARENT)
                     .generate();
             String hover = main.copy()
+                    .addFxBackgroundSize(Toolbar.height/3 * 2)
                     .addFxBackgroundColor(R.colors.WHITE, 0.2)
                     .generate();
             String pressed = main.copy()
+                    .addFxBackgroundSize(Toolbar.height/2)
                     .addFxBackgroundColor(R.colors.WHITE, 0.4)
                     .generate();
         }
