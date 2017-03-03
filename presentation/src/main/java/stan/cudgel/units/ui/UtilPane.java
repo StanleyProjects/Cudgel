@@ -2,35 +2,27 @@ package stan.cudgel.units.ui;
 
 import javafx.application.Platform;
 import javafx.scene.CacheHint;
+import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.paint.Color;
 
-public abstract class MVPScene<P>
-        extends Scene
+public abstract class UtilPane
+        extends Pane
 {
-    private P presenter;
-    private Pane root;
     private String tag;
 
-    public MVPScene(Pane pane, String css, double width, double height, Color color)
+    public UtilPane(String css, double width, double height)
     {
-        super(pane, width, height, color);
-//        pane.setCache(true);
-//        pane.setCacheHint(CacheHint.QUALITY);
-//        pane.setCache(false);
-        root = pane;
+        super();
+        setCache(true);
+        setCacheHint(CacheHint.QUALITY);
+        setStyle(css);
+        setPrefSize(width,height);
         tag = "["+getClass().getName().replace(getClass().getPackage().getName()+".", "")+"]";
-        initViews(root);
-        getRoot().setVisible(false);
-        root.setStyle(css);
-//        setFill(null);
+        initViews();
         runOnUiThread(()->
         {
             init();
-            getRoot().setVisible(true);
             log("\n\tw: " + getWidth() + " h: " + getHeight());
         });
     }
@@ -39,19 +31,6 @@ public abstract class MVPScene<P>
     {
         node.setLayoutX(x);
         node.setLayoutY(y);
-    }
-    final protected void setScale(Node node, double s)
-    {
-        s = (int)(s*100);
-        s /= 100;
-        if(node.getScaleX() != s)
-        {
-            node.setScaleX(s);
-        }
-        if(node.getScaleY() != s)
-        {
-            node.setScaleY(s);
-        }
     }
     final protected void setStyle(Node node, String normal, String hover, String pressed)
     {
@@ -67,9 +46,41 @@ public abstract class MVPScene<P>
             }
         });
     }
+    final protected void setScale(Node node, double s)
+    {
+        s = (int)(s*100);
+        s /= 100;
+        if(node.getScaleX() != s)
+        {
+            node.setScaleX(s);
+        }
+        if(node.getScaleY() != s)
+        {
+            node.setScaleY(s);
+        }
+    }
+    final protected void setSize(Node node, int w, int h)
+    {
+        //node.resize(w, h);
+        node.minHeight(h);
+        node.prefHeight(h);
+        node.maxHeight(h);
+        node.minWidth(w);
+        node.prefWidth(w);
+        node.maxWidth(w);
+        /*
+        node.setMinSize(w, h);
+        node.setPrefSize(w, h);
+        node.setMaxSize(w, h);
+        */
+    }
+    final protected void setSize(Node node, int size)
+    {
+        setSize(node, size, size);
+    }
     final protected void addChildrens(Node... childrens)
     {
-        root.getChildren().addAll(childrens);
+        getChildren().addAll(childrens);
     }
     final protected void log(String message)
     {
@@ -83,14 +94,13 @@ public abstract class MVPScene<P>
     {
         new Thread(r)
         {
-            @Override
             public void run()
             {
                 try
                 {
                     sleep(ms);
                 }
-                catch(InterruptedException ignored)
+                catch(InterruptedException e)
                 {
                 }
                 super.run();
@@ -102,15 +112,6 @@ public abstract class MVPScene<P>
         Platform.runLater(r);
     }
 
-    protected void setPresenter(P p)
-    {
-        presenter = p;
-    }
-    protected P getPresenter()
-    {
-        return presenter;
-    }
-
-    abstract protected void initViews(Pane root);
+    abstract protected void initViews();
     abstract protected void init();
 }

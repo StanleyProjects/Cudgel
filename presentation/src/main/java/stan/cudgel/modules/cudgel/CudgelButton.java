@@ -1,6 +1,7 @@
 package stan.cudgel.modules.cudgel;
 
 import javafx.scene.control.Button;
+import javafx.scene.effect.BlurType;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.shape.Circle;
@@ -15,7 +16,7 @@ public class CudgelButton
 	{
 		CSS main = new CSS()
                 .addClearFocusBorder()
-    			.addFxEffectDropshadow(CSS.FxEffectBlurType.THREE_PASS_BOX, R.colors.BLACK, 3, 0, 0, 0)
+    			.addFxEffectDropshadow(BlurType.THREE_PASS_BOX, R.colors.BLACK, 3, 0, 0, 0)
     			.addFxBackgroundRadius(MAX_SIZE/2)
     			.addFxBackgroundPosition(CSS.FxBackgroundPosition.CENTER)
     			.addFxBackgroundRepeat(BackgroundRepeat.NO_REPEAT);

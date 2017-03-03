@@ -8,14 +8,21 @@ import stan.cudgel.di.PlatformUtil;
 public class JavaFXUtil
     implements PlatformUtil
 {
-    public JavaFXUtil()
+    private ScreenShoter screenShoter;
+
+    public JavaFXUtil(ScreenShoter ss)
     {
+        screenShoter = ss;
     }
 
-    @Override
     public void runOnUiThread(Runnable r)
     {
         Platform.runLater(r);
+    }
+
+    public ScreenShoter getScreenShoter()
+    {
+        return screenShoter;
     }
 
     @Override
@@ -30,14 +37,13 @@ public class JavaFXUtil
         System.out.println(message);
     }
 
-    @Override
-    public PlatformUtil.ViewDragger drag(Node n, double x, double y)
+    public ViewDragger newDragger(Node n, double x, double y)
     {
         return new Dragger(n, x, y);
     }
 
     private class Dragger
-        implements PlatformUtil.ViewDragger
+        implements ViewDragger
     {
         private double dX;
         private double dY;
@@ -50,7 +56,6 @@ public class JavaFXUtil
             dY = Math.abs(node.getLayoutY() - y);
         }
 
-        @Override
         public void drag(double newX, double newY)
         {
             node.setLayoutX(newX - dX);

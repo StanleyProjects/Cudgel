@@ -1,6 +1,7 @@
 package stan.cudgel.modules.cudgel;
 
 import javafx.scene.control.Button;
+import javafx.scene.effect.BlurType;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BackgroundRepeat;
 
@@ -25,7 +26,8 @@ public class CudgelPane
                 .addFxBackgroundColor("null")
                 .generate();
         CSS small_button = new CSS()
-                .addFxEffectDropshadow(CSS.FxEffectBlurType.THREE_PASS_BOX, R.colors.BLACK, 3, 0, 0, 0)
+                .addFxEffectDropshadow(BlurType.THREE_PASS_BOX, R.colors.BLACK, 3, 0)
+//                .addFxEffectDropshadow(CSS.FxEffectBlurType.GAUSSIAN, R.colors.BLACK, 3, 0, 0, 0)
                 .addFxBackgroundRadius(small_button_size/2)
                 .addFxBackgroundPosition(CSS.FxBackgroundPosition.CENTER)
                 .addFxBackgroundRepeat(BackgroundRepeat.NO_REPEAT)
@@ -48,17 +50,32 @@ public class CudgelPane
         interface Settings
         {
             CSS main = small_button.copy()
-                    .addClearFocusBorder()
-                    .addFxBackgroundImage(R.images.SETTINGS);
+                                   .addClearFocusBorder()
+                                   .addFxBackgroundImage(R.images.SETTINGS);
             String normal = main.copy()
-                    .addFxBackgroundColor(R.colors.PRIMARY)
-                    .generate();
+                                .addFxBackgroundColor(R.colors.PRIMARY)
+                                .generate();
             String hover = main.copy()
-                    .addFxBackgroundColor(R.colors.PRIMARY, 25)
-                    .generate();
+                               .addFxBackgroundColor(R.colors.PRIMARY, 25)
+                               .generate();
             String pressed = main.copy()
-                    .addFxBackgroundColor(R.colors.PRIMARY, 50)
-                    .generate();
+                                 .addFxBackgroundColor(R.colors.PRIMARY, 50)
+                                 .generate();
+        }
+        interface ScreenShot
+        {
+            CSS main = small_button.copy()
+                                   .addClearFocusBorder()
+                                   .addFxBackgroundImage(R.images.CAMERA);
+            String normal = main.copy()
+                                .addFxBackgroundColor(R.colors.PRIMARY)
+                                .generate();
+            String hover = main.copy()
+                               .addFxBackgroundColor(R.colors.PRIMARY, 25)
+                               .generate();
+            String pressed = main.copy()
+                                 .addFxBackgroundColor(R.colors.PRIMARY, 50)
+                                 .generate();
         }
     }
 
@@ -69,17 +86,14 @@ public class CudgelPane
     private CudgelButton cudgelButton;
     private Button musicPlayerButton;
     private Button settingsButton;
+    private Button screenShotButton;
 
     private final ValueAnimator.Updater<Double> settingsScaleUpdater = d -> runOnUiThread(() -> setScale(settingsButton, d));
     private final ValueAnimator.Updater<Double> cudgelButtonScaleUpdater = d -> runOnUiThread(() -> setScale(cudgelButton, d));
     private final ValueAnimator.Updater<Double> musicPlayerButtonScaleUpdater = d -> runOnUiThread(() -> setScale(musicPlayerButton, d));
-    private final ValueAnimator.Interpolator<Double> settingsHideScaleInterpolator = new ValueAnimator.AccelerateDoubleInterpolator(2);
-    private final ValueAnimator.Interpolator<Double> settingsShowScaleInterpolator = new ValueAnimator.DecelerateDoubleInterpolator(2);
-//    private final ValueAnimator.Interpolator<Double> settingsHideScaleInterpolator = new ValueAnimator.BounceDoubleInterpolator();
-//    private final ValueAnimator.Interpolator<Double> settingsShowScaleInterpolator = settingsHideScaleInterpolator;
-    private final ValueAnimator.Interpolator<Double> cudgelButtonShowScaleInterpolator = new ValueAnimator.DecelerateDoubleInterpolator(2);
-    private final ValueAnimator.Interpolator<Double> musicPlayerButtonHideScaleInterpolator = new ValueAnimator.AccelerateDoubleInterpolator(2);
-    private final ValueAnimator.Interpolator<Double> musicPlayerButtonShowScaleInterpolator = new ValueAnimator.DecelerateDoubleInterpolator(2);
+    private final ValueAnimator.Updater<Double> screenShotButtonScaleUpdater = d -> runOnUiThread(() -> setScale(screenShotButton, d));
+    private final ValueAnimator.Interpolator<Double> hideScaleInterpolator = new ValueAnimator.AccelerateDoubleInterpolator(2);
+    private final ValueAnimator.Interpolator<Double> showScaleInterpolator = new ValueAnimator.DecelerateDoubleInterpolator(2);
     private final ValueAnimator.AnimationListener settingsHideAnimationListener = new ValueAnimator.AnimationListener()
     {
         public void begin()
@@ -104,6 +118,22 @@ public class CudgelPane
         {
             runOnUiThread(()->settingsButton.setDisable(false));
         }
+        public void cancel()
+        {
+        }
+    };
+    private final ValueAnimator.AnimationListener cudgelButtonHideAnimationListener = new ValueAnimator.AnimationListener()
+    {
+        @Override
+        public void begin()
+        {
+        }
+        @Override
+        public void end()
+        {
+            runOnUiThread(()->cudgelButton.setVisible(false));
+        }
+        @Override
         public void cancel()
         {
         }
@@ -156,11 +186,46 @@ public class CudgelPane
         {
         }
     };
-    private final ValueAnimator.Animator settingsShowAnimator = ValueAnimator.create(Styles.scale_animation_time, 0.01, 1, settingsScaleUpdater, settingsShowScaleInterpolator).setAnimationListener(settingsShowAnimationListener);
-    private final ValueAnimator.Animator settingsHideAnimator = ValueAnimator.create(Styles.scale_animation_time, 1, 0.01, settingsScaleUpdater, settingsHideScaleInterpolator).setAnimationListener(settingsHideAnimationListener);
-    private final ValueAnimator.Animator cudgelButtonShowAnimator = ValueAnimator.create(Styles.scale_animation_time, 0.01, 1, cudgelButtonScaleUpdater, cudgelButtonShowScaleInterpolator).setAnimationListener(cudgelButtonShowAnimationListener);
-    private final ValueAnimator.Animator musicPlayerButtonShowAnimator = ValueAnimator.create(Styles.scale_animation_time, 0.01, 1, musicPlayerButtonScaleUpdater, musicPlayerButtonShowScaleInterpolator).setAnimationListener(musicPlayerButtonShowAnimationListener);
-    private final ValueAnimator.Animator musicPlayerButtonHideAnimator = ValueAnimator.create(Styles.scale_animation_time, 1, 0.01, musicPlayerButtonScaleUpdater, musicPlayerButtonHideScaleInterpolator).setAnimationListener(musicPlayerButtonHideAnimationListener);
+    private final ValueAnimator.AnimationListener screenShotButtonHideAnimationListener = new ValueAnimator.AnimationListener()
+    {
+        @Override
+        public void begin()
+        {
+        }
+        @Override
+        public void end()
+        {
+            runOnUiThread(()->screenShotButton.setVisible(false));
+        }
+        @Override
+        public void cancel()
+        {
+        }
+    };
+    private final ValueAnimator.AnimationListener screenShotButtonShowAnimationListener = new ValueAnimator.AnimationListener()
+    {
+        @Override
+        public void begin()
+        {
+            runOnUiThread(()->screenShotButton.setVisible(true));
+        }
+        @Override
+        public void end()
+        {
+        }
+        @Override
+        public void cancel()
+        {
+        }
+    };
+    private final ValueAnimator.Animator settingsShowAnimator = ValueAnimator.create(Styles.scale_animation_time, 0.01, 1, settingsScaleUpdater, showScaleInterpolator).setAnimationListener(settingsShowAnimationListener);
+    private final ValueAnimator.Animator settingsHideAnimator = ValueAnimator.create(Styles.scale_animation_time, 1, 0.01, settingsScaleUpdater, hideScaleInterpolator).setAnimationListener(settingsHideAnimationListener);
+    private final ValueAnimator.Animator cudgelButtonShowAnimator = ValueAnimator.create(Styles.scale_animation_time, 0.01, 1, cudgelButtonScaleUpdater, showScaleInterpolator).setAnimationListener(cudgelButtonShowAnimationListener);
+    private final ValueAnimator.Animator cudgelButtonHideAnimator = ValueAnimator.create(Styles.scale_animation_time, 1, 0.01, cudgelButtonScaleUpdater, hideScaleInterpolator).setAnimationListener(cudgelButtonHideAnimationListener);
+    private final ValueAnimator.Animator musicPlayerButtonShowAnimator = ValueAnimator.create(Styles.scale_animation_time, 0.01, 1, musicPlayerButtonScaleUpdater, showScaleInterpolator).setAnimationListener(musicPlayerButtonShowAnimationListener);
+    private final ValueAnimator.Animator musicPlayerButtonHideAnimator = ValueAnimator.create(Styles.scale_animation_time, 1, 0.01, musicPlayerButtonScaleUpdater, hideScaleInterpolator).setAnimationListener(musicPlayerButtonHideAnimationListener);
+    private final ValueAnimator.Animator screenShotButtonShowAnimator = ValueAnimator.create(Styles.scale_animation_time, 0.01, 1, screenShotButtonScaleUpdater, showScaleInterpolator).setAnimationListener(screenShotButtonShowAnimationListener);
+    private final ValueAnimator.Animator screenShotButtonHideAnimator = ValueAnimator.create(Styles.scale_animation_time, 1, 0.01, screenShotButtonScaleUpdater, hideScaleInterpolator).setAnimationListener(screenShotButtonHideAnimationListener);
 
     public CudgelPane(PlatformUtil pu, CudgelContract.Behaviour b, CallbackConnector<CudgelContract.Callback> connector)
     {
@@ -177,6 +242,10 @@ public class CudgelPane
             {
                 (show ? settingsShowAnimator : settingsHideAnimator).animate();
             }
+            public void showScreenShotButton(boolean show)
+            {
+                (show ? screenShotButtonShowAnimator : screenShotButtonHideAnimator).animate();
+            }
         });
     }
     protected void initViews()
@@ -188,7 +257,10 @@ public class CudgelPane
         settingsButton = new Button();
         settingsButton.setMinSize(Styles.small_button_size, Styles.small_button_size);
         setStyle(settingsButton, Styles.Settings.normal, Styles.Settings.hover, Styles.Settings.pressed);
-        addChildrens(cudgelButton, musicPlayerButton, settingsButton);
+        screenShotButton = new Button();
+        screenShotButton.setMinSize(Styles.small_button_size, Styles.small_button_size);
+        setStyle(screenShotButton, Styles.ScreenShot.normal, Styles.ScreenShot.hover, Styles.ScreenShot.pressed);
+        addChildrens(cudgelButton, musicPlayerButton, settingsButton, screenShotButton);
     }
     protected void init()
     {
@@ -203,14 +275,18 @@ public class CudgelPane
             }
             else if(event.getButton() == MouseButton.SECONDARY && cudgelButton.isHover())
             {
-                behaviour.exit();
+                runOnNewThread(cudgelButtonHideAnimator::animate, 300);
+                runOnNewThread(settingsHideAnimator::animate, 200);
+                runOnNewThread(musicPlayerButtonHideAnimator::animate, 100);
+                runOnNewThread(screenShotButtonHideAnimator::animate, 0);
+                runOnNewThread(behaviour::exit, 400 + Styles.scale_animation_time);
             }
         });
         cudgelButton.setOnMousePressed(event ->
         {
             if(event.getButton() == MouseButton.PRIMARY)
             {
-                viewDragger = platformUtil.drag(CudgelPane.this, event.getScreenX(), event.getScreenY());
+                viewDragger = platformUtil.newDragger(CudgelPane.this, event.getScreenX(), event.getScreenY());
             }
         });
         cudgelButton.setOnMouseDragged(event ->
@@ -224,14 +300,19 @@ public class CudgelPane
         musicPlayerButton.setOnAction(event -> behaviour.openMusicPlayer());
         moveNode(settingsButton, 0, getHeight()/2 - musicPlayerButton.getHeight()/2);
         settingsButton.setOnAction(event -> behaviour.openSettings());
+        moveNode(screenShotButton, getWidth() - screenShotButton.getWidth(), getHeight()/2 - screenShotButton.getHeight()/2);
+        screenShotButton.setOnAction(event -> behaviour.takeScreenShot());
         settingsButton.setVisible(false);
         cudgelButton.setVisible(false);
         musicPlayerButton.setVisible(false);
+        screenShotButton.setVisible(false);
         setScale(settingsButton, 0.01);
         setScale(cudgelButton, 0.01);
         setScale(musicPlayerButton, 0.01);
+        setScale(screenShotButton, 0.01);
         cudgelButtonShowAnimator.animate();
-        runOnNewThread(settingsShowAnimator::animate, 200);
-        runOnNewThread(musicPlayerButtonShowAnimator::animate, 400);
+        runOnNewThread(settingsShowAnimator::animate, 100);
+        runOnNewThread(musicPlayerButtonShowAnimator::animate, 200);
+        runOnNewThread(screenShotButtonShowAnimator::animate, 300);
     }
 }

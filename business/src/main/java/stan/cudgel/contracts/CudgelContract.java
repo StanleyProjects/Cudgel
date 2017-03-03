@@ -13,11 +13,13 @@ public interface CudgelContract
     {
         void openMusicPlayer();
         void openSettings();
+        void takeScreenShot();
         void exit();
     }
     interface Callback
     {
         void showMusicPlayerButton(boolean show);
         void showSettingsButton(boolean show);
+        void showScreenShotButton(boolean show);
     }
 }

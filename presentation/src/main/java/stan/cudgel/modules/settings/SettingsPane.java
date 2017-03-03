@@ -1,5 +1,6 @@
 package stan.cudgel.modules.settings;
 
+import javafx.scene.effect.BlurType;
 import javafx.scene.paint.Color;
 import javafx.scene.control.Label;
 import javafx.scene.control.Button;
@@ -27,7 +28,7 @@ public class SettingsPane
         int pane_size = 256;
 
         String main = new CSS()
-                .addFxEffectDropshadow(CSS.FxEffectBlurType.THREE_PASS_BOX, R.colors.BLACK, 10, 0, 0, 0)
+                .addFxEffectDropshadow(BlurType.THREE_PASS_BOX, R.colors.BLACK, 10, 0, 0, 0)
                 .addFxBackgroundColor(R.colors.WHITE)
                 .generate();
         interface Toolbar
@@ -48,20 +49,19 @@ public class SettingsPane
                     .addClearFocusBorder()
                     .addFxBackgroundPosition(CSS.FxBackgroundPosition.CENTER)
                     .addFxBackgroundRepeat(BackgroundRepeat.NO_REPEAT)
-//                    .addFxBackgroundSize(Toolbar.height/2)
                     .addFxBackgroundRadius(0)
-                    .addFxBackgroundImage(R.images.CLOSE);
+                    .addFxBackgroundImage(R.images.CLOSE_WHITE);
             String normal = main.copy()
-                    .addFxBackgroundSize(Toolbar.height/2)
+                    .addFxBackgroundSize(Toolbar.height * 0.5)
                     .addFxBackgroundColor(R.colors.TRANSPARENT)
                     .generate();
             String hover = main.copy()
-                    .addFxBackgroundSize(Toolbar.height/3 * 2)
-                    .addFxBackgroundColor(R.colors.WHITE, 0.2)
+                    .addFxBackgroundSize(Toolbar.height * 0.6)
+                    .addFxBackgroundColor(R.colors.WHITE, 0.1)
                     .generate();
             String pressed = main.copy()
-                    .addFxBackgroundSize(Toolbar.height/2)
-                    .addFxBackgroundColor(R.colors.WHITE, 0.4)
+                    .addFxBackgroundSize(Toolbar.height * 0.5)
+                    .addFxBackgroundColor(R.colors.WHITE, 0.2)
                     .generate();
         }
     }
@@ -90,7 +90,7 @@ public class SettingsPane
         closeButton = new Button();
         closeButton.setMinSize(Styles.Toolbar.height, Styles.Toolbar.height);
         setStyle(closeButton, Styles.Close.normal, Styles.Close.hover, Styles.Close.pressed);
-        toolbarLabel = new Label("Settings");
+        toolbarLabel = new Label(R.strings.SETTINGS_TITLE);
         toolbarLabel.setMinSize(Styles.pane_size - Styles.Toolbar.height*1, Styles.Toolbar.height);
         toolbarLabel.setStyle(Styles.Toolbar.label);
         toolbarLabel.setPadding(new Insets(0, 0, 0, Styles.Toolbar.label_text_size/2));
@@ -112,7 +112,7 @@ public class SettingsPane
         {
             if(event.getButton() == MouseButton.PRIMARY)
             {
-                viewDragger = platformUtil.drag(SettingsPane.this, event.getScreenX(), event.getScreenY());
+                viewDragger = platformUtil.newDragger(SettingsPane.this, event.getScreenX(), event.getScreenY());
             }
         });
         toolbar.setOnMouseDragged(event ->

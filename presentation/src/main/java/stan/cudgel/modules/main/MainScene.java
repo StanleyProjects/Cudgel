@@ -6,8 +6,10 @@ import javafx.scene.paint.Color;
 import stan.cudgel.App;
 import stan.cudgel.contracts.CudgelContract;
 import stan.cudgel.contracts.MainContract;
+import stan.cudgel.contracts.ScreenShotContract;
 import stan.cudgel.contracts.SettingsContract;
 import stan.cudgel.modules.cudgel.CudgelPane;
+import stan.cudgel.modules.media.screenshot.ScreenShotPane;
 import stan.cudgel.modules.settings.SettingsPane;
 import stan.cudgel.units.ui.MVPScene;
 import stan.cudgel.utils.CSS;
@@ -27,7 +29,10 @@ public class MainScene
 
     private Pane cudgelPane;
     private Pane settingsPane;
+    private Pane screenShotPane;
+
     private CudgelContract.Callback cudgelCallback;
+    private ScreenShotContract.Callback screenShotCallback;
 
     private final MainContract.View view = new MainContract.View()
     {
@@ -43,6 +48,11 @@ public class MainScene
         {
             cudgelCallback.showMusicPlayerButton(!show);
         }
+        public void showScreenShoter(boolean show)
+        {
+            cudgelCallback.showScreenShotButton(!show);
+            (show ? screenShotShowAnimator : screenShotHideAnimator).animate();
+        }
         public void exit()
         {
             App.getAppComponent().getPlatformUtil().exit();
@@ -50,8 +60,11 @@ public class MainScene
     };
 
     private final ValueAnimator.Updater<Double> settingsScaleUpdater = d -> runOnUiThread(() -> setScale(settingsPane, d));
+    private final ValueAnimator.Updater<Double> screenShotOpacityUpdater = d -> runOnUiThread(() -> screenShotPane.setOpacity(d));
     private final ValueAnimator.Interpolator<Double> settingsHideScaleInterpolator = new ValueAnimator.AccelerateDoubleInterpolator(2);
     private final ValueAnimator.Interpolator<Double> settingsShowScaleInterpolator = new ValueAnimator.DecelerateDoubleInterpolator(2);
+    private final ValueAnimator.Interpolator<Double> screenShotHideScaleInterpolator = new ValueAnimator.AccelerateDoubleInterpolator(2);
+    private final ValueAnimator.Interpolator<Double> screenShotShowScaleInterpolator = new ValueAnimator.DecelerateDoubleInterpolator(2);
     private final ValueAnimator.AnimationListener settingsHideAnimationListener = new ValueAnimator.AnimationListener()
     {
         public void begin()
@@ -80,8 +93,38 @@ public class MainScene
         {
         }
     };
+    private final ValueAnimator.AnimationListener screenShotHideAnimationListener = new ValueAnimator.AnimationListener()
+    {
+        public void begin()
+        {
+            runOnUiThread(()->screenShotPane.setDisable(true));
+        }
+        public void end()
+        {
+            runOnUiThread(()->screenShotPane.setVisible(false));
+        }
+        public void cancel()
+        {
+        }
+    };
+    private final ValueAnimator.AnimationListener screenShotShowAnimationListener = new ValueAnimator.AnimationListener()
+    {
+        public void begin()
+        {
+            runOnUiThread(()->screenShotPane.setVisible(true));
+        }
+        public void end()
+        {
+            runOnUiThread(()->screenShotPane.setDisable(false));
+        }
+        public void cancel()
+        {
+        }
+    };
     private final ValueAnimator.Animator settingsShowAnimator = ValueAnimator.create(Styles.scale_animation_time, 0.01, 1, settingsScaleUpdater, settingsShowScaleInterpolator).setAnimationListener(settingsShowAnimationListener);
     private final ValueAnimator.Animator settingsHideAnimator = ValueAnimator.create(Styles.scale_animation_time, 1, 0.01, settingsScaleUpdater, settingsHideScaleInterpolator).setAnimationListener(settingsHideAnimationListener);
+    private final ValueAnimator.Animator screenShotShowAnimator = ValueAnimator.create(Styles.scale_animation_time, 0.01, 1, screenShotOpacityUpdater, screenShotShowScaleInterpolator).setAnimationListener(screenShotShowAnimationListener);
+    private final ValueAnimator.Animator screenShotHideAnimator = ValueAnimator.create(Styles.scale_animation_time, 1, 0.01, screenShotOpacityUpdater, screenShotHideScaleInterpolator).setAnimationListener(screenShotHideAnimationListener);
 
     public MainScene(double width, double height)
     {
@@ -97,6 +140,11 @@ public class MainScene
             public void openSettings()
             {
                 getPresenter().showSettings(true);
+            }
+            public void takeScreenShot()
+            {
+                getPresenter().showScreenShoter(true);
+                screenShotCallback.newScreenShot();
             }
             public void openMusicPlayer()
             {
@@ -114,7 +162,14 @@ public class MainScene
                 getPresenter().showSettings(false);
             }
         });
-        addChildrens(cudgelPane, settingsPane);
+        screenShotPane = new ScreenShotPane(App.getAppComponent().getPlatformUtil().getScreenShoter(), new ScreenShotContract.Behaviour()
+        {
+            public void close()
+            {
+                getPresenter().showScreenShoter(false);
+            }
+        }, c -> screenShotCallback = c, getWidth(), getHeight());
+        addChildrens(cudgelPane, settingsPane, screenShotPane);
     }
     protected void init()
     {
@@ -125,6 +180,7 @@ public class MainScene
             ,getWidth()/2 - settingsPane.getWidth()/2
             ,getHeight()/2 - settingsPane.getHeight()/2);
         settingsPane.setVisible(false);
+        screenShotPane.setVisible(false);
         setScale(settingsPane, 0);
         setPresenter(new MainPresenter(view, router));
     }

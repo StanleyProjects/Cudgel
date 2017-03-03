@@ -9,12 +9,14 @@ public interface MainContract
     {
         void showSettings(boolean show);
         void showMusicPlayer(boolean show);
+        void showScreenShoter(boolean show);
     	void exit();
     }
     interface Presenter
     {
         void showSettings(boolean show);
-    	void showMusicPlayer(boolean show);
+        void showMusicPlayer(boolean show);
+        void showScreenShoter(boolean show);
     	void exit();
     }
 }

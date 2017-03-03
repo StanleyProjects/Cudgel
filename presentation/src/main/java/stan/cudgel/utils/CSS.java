@@ -1,7 +1,7 @@
 package stan.cudgel.utils;
 
 import javafx.scene.paint.Color;
-import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.effect.BlurType;
 import javafx.scene.layout.BackgroundRepeat;
 
 public class CSS
@@ -26,7 +26,11 @@ public class CSS
         style += "-fx-focus-color: transparent;-fx-background-insets: 0, 1, 2;";
         return this;
     }
-    public CSS addFxEffectDropshadow(FxEffectBlurType blurType, String color, int radius, int spread, int offsetX, int offsetY)
+    public CSS addFxEffectDropshadow(BlurType blurType, String color, int radius, int spread)
+    {
+        return addFxEffectDropshadow(blurType, color, radius, spread, 0, 0);
+    }
+    public CSS addFxEffectDropshadow(BlurType blurType, String color, int radius, int spread, int offsetX, int offsetY)
     {
         style += "-fx-effect: dropshadow(";
         switch(blurType)
@@ -98,6 +102,10 @@ public class CSS
         style += "-fx-background-image: url(\""+path+"\");";
         return this;
     }
+    public CSS addFxBackgroundSize(double size)
+    {
+        return addFxBackgroundSize((int)size);
+    }
     public CSS addFxBackgroundSize(int size)
     {
         style += "-fx-background-size:" + size + "px;";
@@ -138,13 +146,6 @@ public class CSS
         return style;
     }
 
-    public enum FxEffectBlurType
-    {
-        GAUSSIAN,
-        ONE_PASS_BOX,
-        THREE_PASS_BOX,
-        TWO_PASS_BOX,
-    }
     public enum FxBackgroundPosition
     {
         LEFT,
