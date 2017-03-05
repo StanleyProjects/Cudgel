@@ -7,6 +7,8 @@ public interface R
         String TRANSPARENT = "#00000000";
         String BLACK = "#000000";
         String WHITE = "#ffffff";
+        String GRAY = "#E0E0E0";
+        String GRAY_DARK = "#BDBDBD";
         String BLUE = "#2196F3";
         String RED = "#F44336";
 

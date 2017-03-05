@@ -10,7 +10,9 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import stan.cudgel.di.AppComponent;
+import stan.cudgel.di.FoldersAccess;
 import stan.cudgel.di.PlatformUtil;
+import stan.cudgel.managers.FoldersManager;
 import stan.cudgel.modules.main.MainScene;
 import stan.cudgel.utils.JavaFXUtil;
 import stan.cudgel.utils.ScreenShoter;
@@ -31,7 +33,7 @@ public class App
 
     public void start(Stage primaryStage)
     {
-        appComponent = new Component(new JavaFXUtil(new ScreenShoter()));
+        appComponent = new Component(new JavaFXUtil(new ScreenShoter()), new FoldersManager(System.getProperty("user.home") + "/stan/cudgel"));
         primaryStage.initStyle(StageStyle.TRANSPARENT);
         primaryStage.setAlwaysOnTop(true);
 //        primaryStage.setFullScreen(true);
@@ -51,15 +53,21 @@ public class App
         implements AppComponent
     {
         private PlatformUtil platformUtil;
+        private FoldersAccess foldersAccess;
 
-        Component(PlatformUtil pu)
+        Component(PlatformUtil pu, FoldersAccess fa)
         {
             platformUtil = pu;
+            foldersAccess = fa;
         }
 
         public PlatformUtil getPlatformUtil()
         {
             return platformUtil;
+        }
+        public FoldersAccess getFoldersAccess()
+        {
+            return foldersAccess;
         }
     }
 }

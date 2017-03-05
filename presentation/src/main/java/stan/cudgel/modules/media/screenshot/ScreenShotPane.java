@@ -5,6 +5,7 @@ import javafx.scene.effect.BlurType;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.Pane;
+import stan.cudgel.App;
 import stan.cudgel.R;
 import stan.cudgel.contracts.ScreenShotContract;
 import stan.cudgel.di.PlatformUtil;
@@ -35,15 +36,40 @@ public class ScreenShotPane
                     .addFxBackgroundSize(small_button_size/3*2)
                     .addFxBackgroundImage(R.images.CLOSE_BLACK);
             String normal = main.copy()
-                                .addFxBackgroundColor(R.colors.WHITE, 100)
+                                .addFxBackgroundColor(R.colors.WHITE)
                                 .generate();
             String hover = main.copy()
-                               .addFxBackgroundColor(R.colors.WHITE, 85)
+                               .addFxBackgroundColor(R.colors.GRAY)
                                .generate();
             String pressed = main.copy()
-                                 .addFxBackgroundColor(R.colors.WHITE, 70)
+                                 .addFxBackgroundColor(R.colors.GRAY_DARK)
                                  .generate();
         }
+        interface Save
+        {
+            CSS main = new CSS()
+                    .addClearFocusBorder()
+                    .addFxEffectDropshadow(BlurType.THREE_PASS_BOX, R.colors.BLACK, 3, 0)
+                    .addFxBackgroundRadius(medium_button_size/2)
+                    .addFxBackgroundPosition(CSS.FxBackgroundPosition.CENTER)
+                    .addFxBackgroundRepeat(BackgroundRepeat.NO_REPEAT)
+                    .addFxBackgroundSize(medium_button_size/3*2)
+                    .addFxBackgroundImage(R.images.DOWNLOAD);
+            String normal = main.copy()
+                                .addFxBackgroundColor(R.colors.PRIMARY)
+                                .generate();
+            String hover = main.copy()
+                               .addFxBackgroundColor(R.colors.PRIMARY, 25)
+                               .generate();
+            String pressed = main.copy()
+                                 .addFxBackgroundColor(R.colors.PRIMARY, 50)
+                                 .generate();
+        }
+    }
+    private enum State
+    {
+        TAKE,
+        SAVE
     }
 
     private final ScreenShotContract.View view = new ScreenShotContract.View()
@@ -62,6 +88,7 @@ public class ScreenShotPane
     private final PlatformUtil.ScreenShoter screenShoter;
     private final ScreenShotContract.Behaviour behaviour;
 
+    private State viewState;
     private byte[] tempImage;
 
     public ScreenShotPane(PlatformUtil.ScreenShoter ss, ScreenShotContract.Behaviour b, CallbackConnector<ScreenShotContract.Callback> connector, double w, double h)
@@ -89,16 +116,26 @@ public class ScreenShotPane
             }
             public void grab(int x, int y, int w, int h)
             {
+                viewState = State.SAVE;
                 grabber.setVisible(false);
-                tempImage = screenShoter.take(x, y, w, h);
-                //moveNode(cancelButton, x+w, y+h);
-                cancelButton.setVisible(true);
+                runOnNewThread(() ->
+                {
+                    tempImage = screenShoter.take(x, y, w, h);
+                    runOnUiThread(() ->
+                    {
+                        cancelButton.setVisible(true);
+                        saveButton.setVisible(true);
+                    });
+                }, 100);
             }
         });
         cancelButton = new Button();
         cancelButton.setMinSize(Styles.small_button_size, Styles.small_button_size);
         setStyle(cancelButton, Styles.Cancel.normal, Styles.Cancel.hover, Styles.Cancel.pressed);
-        addChildrens(grabber, cancelButton);
+        saveButton = new Button();
+        saveButton.setMinSize(Styles.medium_button_size, Styles.medium_button_size);
+        setStyle(saveButton, Styles.Save.normal, Styles.Save.hover, Styles.Save.pressed);
+        addChildrens(grabber, cancelButton, saveButton);
     }
     protected void init()
     {
@@ -112,7 +149,7 @@ public class ScreenShotPane
             }
             else if(event.getButton() == MouseButton.SECONDARY)
             {
-//                behaviour.close();
+                //behaviour.close();
             }
         });
         setOnMousePressed(event ->
@@ -123,9 +160,10 @@ public class ScreenShotPane
         });
         setOnMouseDragged(event ->
         {
-            if(event.getButton() == MouseButton.PRIMARY)
+            if(event.getButton() == MouseButton.PRIMARY && viewState == State.TAKE)
             {
-                moveNode(cancelButton, (int)event.getX(), (int)event.getY());
+                moveNode(cancelButton, (int)event.getX() - cancelButton.getWidth()/2, (int)event.getY() - cancelButton.getHeight());
+                moveNode(saveButton, (int)event.getX() - saveButton.getWidth() - cancelButton.getWidth()/2, (int)event.getY() - saveButton.getHeight()/2);
             }
         });
         cancelButton.setOnMouseReleased(event ->
@@ -135,7 +173,18 @@ public class ScreenShotPane
                 behaviour.close();
             }
         });
-        setPresenter(new ScreenShotPresenter(view, new ScreenShotModel()));
+        saveButton.setOnMouseReleased(event ->
+        {
+            if(event.getButton() == MouseButton.PRIMARY && saveButton.isHover())
+            {
+                getPresenter().saveScreenShot(tempImage);
+            }
+            else if(event.getButton() == MouseButton.SECONDARY && saveButton.isHover())
+            {
+                behaviour.close();
+            }
+        });
+        setPresenter(new ScreenShotPresenter(view, new ScreenShotModel(App.getAppComponent().getFoldersAccess())));
     }
 
     private void clear()
@@ -143,5 +192,7 @@ public class ScreenShotPane
         tempImage = null;
         grabber.setVisible(true);
         cancelButton.setVisible(false);
+        saveButton.setVisible(false);
+        viewState = State.TAKE;
     }
 }

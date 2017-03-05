@@ -41,7 +41,16 @@ class ScreenShotGrabber
         {
             if(event.getButton() == MouseButton.PRIMARY)
             {
-                listener.grab((int)rect.getX(), (int)rect.getY(), (int)rect.getWidth(), (int)rect.getHeight());
+                int w = (int)rect.getWidth();
+                int h = (int)rect.getHeight();
+                if(w > 0 || h > 0)
+                {
+                    listener.grab((int)rect.getX(), (int)rect.getY(), w, h);
+                }
+                else
+                {
+                    listener.cancel();
+                }
                 clear();
             }
             else if(event.getButton() == MouseButton.SECONDARY)

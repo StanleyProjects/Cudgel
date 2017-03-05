@@ -4,18 +4,21 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import stan.cudgel.contracts.ScreenShotContract;
+import stan.cudgel.di.FoldersAccess;
 
 class ScreenShotModel
     implements ScreenShotContract.Model
 {
-    ScreenShotModel()
-    {
+    private FoldersAccess foldersAccess;
 
+    ScreenShotModel(FoldersAccess fa)
+    {
+        foldersAccess = fa;
     }
 
     public void saveScreenShot(byte[] b)
     {
-        try(FileOutputStream stream = new FileOutputStream(".../image.png"))
+        try(FileOutputStream stream = new FileOutputStream(foldersAccess.getScreenshotsPath() + "/" + System.currentTimeMillis() + ".png"))
         {
             stream.write(b);
         }
