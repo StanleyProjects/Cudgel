@@ -20,19 +20,25 @@ public interface R
 
     interface images
     {
-        String LAUNCHER = "launcher.png";
-        String MIC_OFF = "cudgel/mic/mic_off_m.png";
-        String MUSIC = "cudgel/music/music_xh.png";
-        String SETTINGS = "cudgel/settings/settings_white_48dp_m.png";
-        String CLOSE_WHITE = "actions/close/close_white_48dp_m.png";
-        String CLOSE_BLACK = "actions/close/close_black_48dp_m.png";
-        String CAMERA = "media/screenshot/photo_camera_white_48dp_m.png";
-        String DOWNLOAD = "media/files/file_download_white_48dp_m.png";
-        String TELEGRAM = "telegram/telegram.png";
+        String LAUNCHER = "images/launcher.png";
+        String MIC_OFF = "images/cudgel/mic/mic_off_m.png";
+        String MUSIC = "images/cudgel/music/music_xh.png";
+        String SETTINGS = "images/cudgel/settings/settings_white_48dp_m.png";
+        String CLOSE_WHITE = "images/actions/close/close_white_48dp_m.png";
+        String CLOSE_BLACK = "images/actions/close/close_black_48dp_m.png";
+        String CAMERA = "images/media/screenshot/photo_camera_white_48dp_m.png";
+        String DOWNLOAD = "images/media/files/file_download_white_48dp_m.png";
+        String TELEGRAM = "images/telegram/telegram.png";
+    }
+
+    interface styles
+    {
+        String MAIN = "styles/main.css";
     }
 
     interface strings
     {
+        String APP_LOCAL_PATH = "stan/cudgel";
         String APP_NAME = "Cudgel";
         String SETTINGS_TITLE = "Settings";
         String MEDIA_LABLE = "Media";

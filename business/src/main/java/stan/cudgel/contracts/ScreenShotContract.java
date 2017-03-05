@@ -4,12 +4,17 @@ public interface ScreenShotContract
 {
     interface Model
     {
-        void saveScreenShot(byte[] b);
-        void sendScreenShot(byte[] b);
+        void saveScreenShot(byte[] b)
+                throws SaveScreenshotException;
+        void sendScreenShot(byte[] b)
+                throws NetworkException, SendScreenshotTelegramException;
     }
     interface View
     {
-        void hide();
+        void success();
+        void error(SaveScreenshotException e);
+        void error(NetworkException e);
+        void error(SendScreenshotTelegramException e);
     }
     interface Presenter
     {
@@ -24,5 +29,22 @@ public interface ScreenShotContract
     interface Callback
     {
         void newScreenShot();
+    }
+
+    class SaveScreenshotException
+            extends Exception
+    {
+    }
+    class NetworkException
+            extends Exception
+    {
+    }
+    class SendScreenshotTelegramException
+            extends Exception
+    {
+        public SendScreenshotTelegramException(String m)
+        {
+            super(m);
+        }
     }
 }

@@ -16,12 +16,35 @@ class ScreenShotPresenter
     {
         onNewThread(() ->
         {
-            getModel().saveScreenShot(b);
-            getView().hide();
+            try
+            {
+                getModel().saveScreenShot(b);
+                getView().success();
+            }
+            catch(ScreenShotContract.SaveScreenshotException e)
+            {
+                getView().error(e);
+            }
         });
     }
 
     public void sendScreenShot(byte[] b)
     {
+        onNewThread(() ->
+        {
+            try
+            {
+                getModel().sendScreenShot(b);
+                getView().success();
+            }
+            catch(ScreenShotContract.NetworkException e)
+            {
+                getView().error(e);
+            }
+            catch(ScreenShotContract.SendScreenshotTelegramException e)
+            {
+                getView().error(e);
+            }
+        });
     }
 }

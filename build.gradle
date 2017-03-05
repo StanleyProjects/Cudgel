@@ -1,8 +1,14 @@
 
 allprojects {
+  repositories {
+    jcenter()
+  }
+}
+
+allprojects {
   ext {
     applicationId = 'stan.cudgel'
-    versionCode = 1703051707
-    versionName = "0.0.7"
+    versionCode = 1703060118
+    versionName = "0.0.9"
   }
 }

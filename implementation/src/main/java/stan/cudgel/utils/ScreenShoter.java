@@ -22,7 +22,7 @@ public class ScreenShoter
         {
             robot = new Robot();
         }
-        catch(AWTException e)
+        catch(AWTException ignored)
         {
         }
     }
@@ -36,7 +36,7 @@ public class ScreenShoter
             ImageIO.write(image, "png", output);
             return output.toByteArray();
         }
-        catch(IOException e)
+        catch(IOException ignored)
         {
         }
         return null;

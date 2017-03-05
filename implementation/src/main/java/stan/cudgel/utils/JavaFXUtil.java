@@ -25,13 +25,11 @@ public class JavaFXUtil
         return screenShoter;
     }
 
-    @Override
     public void exit()
     {
         System.exit(0);
     }
 
-    @Override
     public void log(String message)
     {
         System.out.println(message);

@@ -4,6 +4,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 
 import stan.cudgel.App;
+import stan.cudgel.R;
 import stan.cudgel.contracts.CudgelContract;
 import stan.cudgel.contracts.MainContract;
 import stan.cudgel.contracts.ScreenShotContract;
@@ -129,7 +130,7 @@ public class MainScene
     public MainScene(double width, double height)
     {
         super(new Pane(), Styles.main, width, height, Color.TRANSPARENT);
-        getStylesheets().add("style.css");
+        getStylesheets().add(R.styles.MAIN);
 //        getStylesheets().add("data:text/css;charset=utf-8,.root {-fx-background-color : red}");
 //        getStylesheets().add("data:text/css;charset=utf-8,.root%7B%0D%0A%20%20%20%20-fx-font-family%3A%20%22Muli%22%3B%0D%0A%20%20%20%20-fx-font-weight%3A%20lighter%3B%0D%0A%20%20%20%20-fx-font-size%3A%2035pt%3B%0D%0A%20%20%20%20-fx-padding%3A%200%3B%0D%0A%20%20%20%20-fx-spacing%3A%200%3B%0D%0A%7D");
     }

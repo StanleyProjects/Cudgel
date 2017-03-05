@@ -65,6 +65,26 @@ public class ScreenShotPane
                                  .addFxBackgroundColor(R.colors.PRIMARY, 50)
                                  .generate();
         }
+        interface Telegram
+        {
+            CSS main = new CSS()
+                    .addClearFocusBorder()
+                    .addFxEffectDropshadow(BlurType.THREE_PASS_BOX, R.colors.BLACK, 3, 0)
+                    .addFxBackgroundRadius(medium_button_size/2)
+                    .addFxBackgroundPosition(CSS.FxBackgroundPosition.CENTER)
+                    .addFxBackgroundRepeat(BackgroundRepeat.NO_REPEAT)
+                    .addFxBackgroundSize(medium_button_size/3*2)
+                    .addFxBackgroundImage(R.images.TELEGRAM);
+            String normal = main.copy()
+                                .addFxBackgroundColor(R.colors.PRIMARY)
+                                .generate();
+            String hover = main.copy()
+                               .addFxBackgroundColor(R.colors.PRIMARY, 25)
+                               .generate();
+            String pressed = main.copy()
+                                 .addFxBackgroundColor(R.colors.PRIMARY, 50)
+                                 .generate();
+        }
     }
     private enum State
     {
@@ -74,9 +94,21 @@ public class ScreenShotPane
 
     private final ScreenShotContract.View view = new ScreenShotContract.View()
     {
-        public void hide()
+        public void success()
         {
             behaviour.close();
+        }
+        public void error(ScreenShotContract.SaveScreenshotException e)
+        {
+            log("SaveScreenshotException " + e.getMessage());
+        }
+        public void error(ScreenShotContract.NetworkException e)
+        {
+            log("NetworkException " + e.getMessage());
+        }
+        public void error(ScreenShotContract.SendScreenshotTelegramException e)
+        {
+            log("SendScreenshotTelegramException " + e.getMessage());
         }
     };
 
@@ -125,6 +157,7 @@ public class ScreenShotPane
                     {
                         cancelButton.setVisible(true);
                         saveButton.setVisible(true);
+                        sendTelegramButton.setVisible(true);
                     });
                 }, 100);
             }
@@ -135,7 +168,10 @@ public class ScreenShotPane
         saveButton = new Button();
         saveButton.setMinSize(Styles.medium_button_size, Styles.medium_button_size);
         setStyle(saveButton, Styles.Save.normal, Styles.Save.hover, Styles.Save.pressed);
-        addChildrens(grabber, cancelButton, saveButton);
+        sendTelegramButton = new Button();
+        sendTelegramButton.setMinSize(Styles.medium_button_size, Styles.medium_button_size);
+        setStyle(sendTelegramButton, Styles.Telegram.normal, Styles.Telegram.hover, Styles.Telegram.pressed);
+        addChildrens(grabber, cancelButton, saveButton, sendTelegramButton);
     }
     protected void init()
     {
@@ -164,6 +200,7 @@ public class ScreenShotPane
             {
                 moveNode(cancelButton, (int)event.getX() - cancelButton.getWidth()/2, (int)event.getY() - cancelButton.getHeight());
                 moveNode(saveButton, (int)event.getX() - saveButton.getWidth() - cancelButton.getWidth()/2, (int)event.getY() - saveButton.getHeight()/2);
+                moveNode(sendTelegramButton, (int)event.getX() + cancelButton.getWidth()/2, (int)event.getY() - sendTelegramButton.getHeight()/2);
             }
         });
         cancelButton.setOnMouseReleased(event ->
@@ -184,7 +221,18 @@ public class ScreenShotPane
                 behaviour.close();
             }
         });
-        setPresenter(new ScreenShotPresenter(view, new ScreenShotModel(App.getAppComponent().getSettings())));
+        sendTelegramButton.setOnMouseReleased(event ->
+        {
+            if(event.getButton() == MouseButton.PRIMARY && sendTelegramButton.isHover())
+            {
+                getPresenter().sendScreenShot(tempImage);
+            }
+            else if(event.getButton() == MouseButton.SECONDARY && sendTelegramButton.isHover())
+            {
+                behaviour.close();
+            }
+        });
+        setPresenter(new ScreenShotPresenter(view, new ScreenShotModel(App.getAppComponent().getSettings(), App.getAppComponent().getConnection())));
     }
 
     private void clear()
@@ -193,6 +241,7 @@ public class ScreenShotPane
         grabber.setVisible(true);
         cancelButton.setVisible(false);
         saveButton.setVisible(false);
+        sendTelegramButton.setVisible(false);
         viewState = State.TAKE;
     }
 }

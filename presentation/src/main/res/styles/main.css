@@ -1,4 +1,6 @@
-
+@font-face {
+    src: url("../fonts/Quicksand-Regular.ttf");
+}
 .scroll-pane .viewport {
    -fx-background-color: transparent;
 }
@@ -8,11 +10,20 @@
 .scroll-pane:disabled, .scroll-pane:default:disabled {
     -fx-opacity: 1;
 }
+.text-field {
+    -fx-font-family: Quicksand;
+}
 .text-field:disabled, .text-field:default:disabled {
     -fx-opacity: 1;
 }
+.button {
+    -fx-font-family: Quicksand;
+}
 .button:disabled, .button:default:disabled {
     -fx-opacity: 1;
+}
+.label {
+    -fx-font-family: Quicksand;
 }
 .label:disabled, .label:default:disabled {
     -fx-opacity: 1;

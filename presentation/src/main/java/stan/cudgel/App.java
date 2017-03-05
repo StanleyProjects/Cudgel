@@ -10,7 +10,9 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import stan.cudgel.boxes.Cases;
+import stan.cudgel.connection.OkHttp;
 import stan.cudgel.di.AppComponent;
+import stan.cudgel.di.Connection;
 import stan.cudgel.di.FoldersAccess;
 import stan.cudgel.di.PlatformUtil;
 import stan.cudgel.di.Settings;
@@ -35,10 +37,11 @@ public class App
 
     public void start(Stage primaryStage)
     {
-        FoldersAccess foldersAccess = new FoldersManager(System.getProperty("user.home") + "/stan/cudgel");
+        FoldersAccess foldersAccess = new FoldersManager(System.getProperty("user.home") + "/" + R.strings.APP_LOCAL_PATH);
         appComponent = new Component(new JavaFXUtil(new ScreenShoter()),
                 foldersAccess,
-                new Cases(foldersAccess));
+                new Cases(foldersAccess),
+                new OkHttp());
         primaryStage.initStyle(StageStyle.TRANSPARENT);
         primaryStage.setAlwaysOnTop(true);
 //        primaryStage.setFullScreen(true);
@@ -60,12 +63,14 @@ public class App
         private PlatformUtil platformUtil;
         private FoldersAccess foldersAccess;
         private Settings settings;
+        private Connection connection;
 
-        Component(PlatformUtil pu, FoldersAccess fa, Settings ss)
+        Component(PlatformUtil pu, FoldersAccess fa, Settings ss, Connection cncn)
         {
             platformUtil = pu;
             foldersAccess = fa;
             settings = ss;
+            connection = cncn;
         }
 
         public PlatformUtil getPlatformUtil()
@@ -79,6 +84,10 @@ public class App
         public Settings getSettings()
         {
             return settings;
+        }
+        public Connection getConnection()
+        {
+            return connection;
         }
     }
 }
