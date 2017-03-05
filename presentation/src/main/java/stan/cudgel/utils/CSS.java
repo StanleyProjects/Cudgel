@@ -121,10 +121,33 @@ public class CSS
         style += "-fx-text-fill:" + color + ";";
         return this;
     }
+    public CSS addFxPromptTextFill(String color)
+    {
+        style += "-fx-prompt-text-fill:" + color + ";";
+        return this;
+    }
     public CSS addFxBackgroundColor(String color)
     {
         style += "-fx-background-color:" + color + ";";
         return this;
+    }
+    public CSS addFxBorderColor(String t, String r, String b, String l)
+    {
+        style += "-fx-border-color:" + t + " " + r + " " + b + " " + l + ";";
+        return this;
+    }
+    public CSS addFxBorderColor(String color)
+    {
+        return addFxBorderColor(color, color, color, color);
+    }
+    public CSS addFxBorderWidth(int t, int r, int b, int l)
+    {
+        style += "-fx-border-width:" + t + " " + r + " " + b + " " + l + ";";
+        return this;
+    }
+    public CSS addFxBorderWidth(int width)
+    {
+        return addFxBorderWidth(width, width, width, width);
     }
     public CSS addFxBackgroundColor(String color, int percent)
     {

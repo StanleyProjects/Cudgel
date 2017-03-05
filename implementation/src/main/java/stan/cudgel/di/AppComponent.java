@@ -4,4 +4,5 @@ public interface AppComponent
 {
     PlatformUtil getPlatformUtil();
     FoldersAccess getFoldersAccess();
+    Settings getSettings();
 }

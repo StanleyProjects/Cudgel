@@ -7,13 +7,14 @@ public interface R
         String TRANSPARENT = "#00000000";
         String BLACK = "#000000";
         String WHITE = "#ffffff";
-        String GRAY = "#E0E0E0";
-        String GRAY_DARK = "#BDBDBD";
+        String GRAY_LIGHT = "#E0E0E0";
+        String GRAY = "#9E9E9E";
+        String GRAY_DARK = "#616161";
         String BLUE = "#2196F3";
         String RED = "#F44336";
 
-//        String PRIMARY = BLUE;
-        String PRIMARY = RED;
+        String PRIMARY = BLUE;
+//        String PRIMARY = RED;
         String ACCENT = WHITE;
     }
 
@@ -34,5 +35,9 @@ public interface R
     {
         String APP_NAME = "Cudgel";
         String SETTINGS_TITLE = "Settings";
+        String MEDIA_LABLE = "Media";
+        String SCREENSHOTSPATH_SUBLABLE = "Screenshots path";
+        String SCREENSHOTSPATH_HINT = "Write your screenshots path here";
+        String SETTINGS_SAVE = "Save";
     }
 }

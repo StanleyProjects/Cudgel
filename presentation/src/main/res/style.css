@@ -1,4 +1,16 @@
 
+.scroll-pane .viewport {
+   -fx-background-color: transparent;
+}
+.scroll-pane {
+   -fx-background-color: transparent;
+}
+.scroll-pane:disabled, .scroll-pane:default:disabled {
+    -fx-opacity: 1;
+}
+.text-field:disabled, .text-field:default:disabled {
+    -fx-opacity: 1;
+}
 .button:disabled, .button:default:disabled {
     -fx-opacity: 1;
 }

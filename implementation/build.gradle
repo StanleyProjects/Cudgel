@@ -4,5 +4,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
+    compile project(':json')
+    compile project(':boxes')
     compile project(':business')
 }

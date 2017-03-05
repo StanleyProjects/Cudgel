@@ -184,7 +184,7 @@ public class ScreenShotPane
                 behaviour.close();
             }
         });
-        setPresenter(new ScreenShotPresenter(view, new ScreenShotModel(App.getAppComponent().getFoldersAccess())));
+        setPresenter(new ScreenShotPresenter(view, new ScreenShotModel(App.getAppComponent().getSettings())));
     }
 
     private void clear()

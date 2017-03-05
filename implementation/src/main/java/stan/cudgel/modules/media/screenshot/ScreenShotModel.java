@@ -5,20 +5,21 @@ import java.io.IOException;
 
 import stan.cudgel.contracts.ScreenShotContract;
 import stan.cudgel.di.FoldersAccess;
+import stan.cudgel.di.Settings;
 
 class ScreenShotModel
     implements ScreenShotContract.Model
 {
-    private FoldersAccess foldersAccess;
+    private Settings settings;
 
-    ScreenShotModel(FoldersAccess fa)
+    ScreenShotModel(Settings ss)
     {
-        foldersAccess = fa;
+        settings = ss;
     }
 
     public void saveScreenShot(byte[] b)
     {
-        try(FileOutputStream stream = new FileOutputStream(foldersAccess.getScreenshotsPath() + "/" + System.currentTimeMillis() + ".png"))
+        try(FileOutputStream stream = new FileOutputStream(settings.getMedia().getScreenshotsPath() + "/" + System.currentTimeMillis() + ".png"))
         {
             stream.write(b);
         }

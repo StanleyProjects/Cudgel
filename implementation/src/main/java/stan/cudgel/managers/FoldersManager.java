@@ -29,6 +29,19 @@ public class FoldersManager
                     +"\n\t"+"create files directory failed!!!");
             return;
         }
+        File database = new File(getDatabasePath());
+        database.mkdirs();
+        if(database.exists())
+        {
+            System.out.println("database"
+                    +"\n\t"+"directory - " + getDatabasePath());
+        }
+        else
+        {
+            System.out.println("database"
+                    +"\n\t"+"create database directory failed!!!");
+            return;
+        }
         File media = new File(getMediaPath());
         media.mkdirs();
         if(media.exists())
@@ -73,6 +86,10 @@ public class FoldersManager
     public String getFilesDirectory()
     {
         return filesDirectory;
+    }
+    public String getDatabasePath()
+    {
+        return filesDirectory + "/database";
     }
     public String getMediaPath()
     {
